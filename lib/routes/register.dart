@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pet_adoption_app/routes/login.dart';
 
 class Register extends StatefulWidget {
   const Register({Key? key}) : super(key: key);
@@ -11,15 +12,16 @@ class _RegisterState extends State<Register> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.yellow,
+      backgroundColor: const Color.fromARGB(255, 240, 224, 84),
       body: Stack(
         children: [
           Container(
             padding: EdgeInsets.only(
                 top: MediaQuery.of(context).size.height * 0.1, left: 30),
             child: const Text(
-              "Welcome to Our App,",
-              style: TextStyle(fontFamily: 'AppFont', fontSize: 33),
+              "Sign Up to Find Your Perfect Pet,",
+              // "Sign Up to Make \nNew Friends,",
+              style: TextStyle(fontFamily: 'AppFont', fontSize: 28),
             ),
           ),
           Container(
@@ -105,7 +107,12 @@ class _RegisterState extends State<Register> {
                     height: 20,
                   ),
                   TextButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const Login()));
+                      },
                       child: const Text(
                         'Already logged in? Click here',
                         style: TextStyle(
