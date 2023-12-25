@@ -1,6 +1,6 @@
 {
   "git.ignoreLimitWarning": true,
-  "cSpell.words": [
-    "ARGB"
-  ]
+  "cSpell.words": ["ARGB"],
+  "cmake.sourceDirectory": "F:/Program/Project/pet_adoption_app/windows/runner",
+  "java.configuration.updateBuildConfiguration": "interactive"
 }

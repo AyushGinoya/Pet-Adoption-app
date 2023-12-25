@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "220029605349",
+    "project_id": "pet-adoption-app-a630e",
+    "storage_bucket": "pet-adoption-app-a630e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:220029605349:android:37a9d08e718b1508b3cb0c",
+        "android_client_info": {
+          "package_name": "com.example.pet_adoption_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCgOxtS5rgQExGpjCV4NeYmqfL08ZgM1vA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

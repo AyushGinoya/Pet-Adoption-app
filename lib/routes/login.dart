@@ -8,6 +8,10 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+  final _formKey = GlobalKey<FormState>();
+
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,30 +29,55 @@ class _LoginState extends State<Login> {
             ),
             Container(
               padding: EdgeInsets.only(
-                  top: MediaQuery.of(context).size.height * 0.1,
+                  top: MediaQuery.of(context).size.height * 0.8,
                   left: 35,
                   right: 35),
               child: Column(
                 children: [
-                  TextField(
-                    decoration: InputDecoration(
-                        fillColor: Colors.white,
-                        filled: true,
-                        hintText: 'username',
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12))),
-                  ),
-                  const SizedBox(
-                    height: 50,
-                  ),
-                  TextField(
-                    decoration: InputDecoration(
-                        fillColor: Colors.white,
-                        filled: true,
-                        hintText: 'password',
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12))),
-                  ),
+                  Form(
+                      key: _formKey,
+                      child: Column(
+                        children: [
+                          TextFormField(
+                            controller: _emailController,
+                            decoration: InputDecoration(
+                                fillColor: Colors.white,
+                                filled: true,
+                                hintText: 'email',
+                                prefixIcon: const Icon(Icons.mail_outline),
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12))),
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return "Enter Email";
+                              }
+
+                              return null;
+                            },
+                          ),
+                          const SizedBox(
+                            height: 50,
+                          ),
+                          TextFormField(
+                            keyboardType: TextInputType.emailAddress,
+                            controller: _passwordController,
+                            decoration: InputDecoration(
+                                fillColor: Colors.white,
+                                filled: true,
+                                hintText: 'password',
+                                prefixIcon: const Icon(Icons.lock_open),
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12))),
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return "Enter Password";
+                              }
+
+                              return null;
+                            },
+                          ),
+                        ],
+                      )),
                   const SizedBox(
                     height: 50,
                   ),
