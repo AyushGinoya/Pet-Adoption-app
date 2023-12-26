@@ -1,5 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:pet_adoption_app/helper/sing_up_controller.dart';
 import 'package:pet_adoption_app/routes/home.dart';
 import 'package:pet_adoption_app/routes/login.dart';
 
@@ -11,28 +14,14 @@ class Register extends StatefulWidget {
 }
 
 class _RegisterState extends State<Register> {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
   final _formKey = GlobalKey<FormState>();
   bool loading = false;
-  final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _numberController = TextEditingController();
-  final TextEditingController _addressController = TextEditingController();
 
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    _usernameController.dispose();
-    _emailController.dispose();
-    _passwordController.dispose();
-    _numberController.dispose();
-    _addressController.dispose();
-    super.dispose();
-  }
+  final databaseRef = FirebaseDatabase.instance.ref('users');
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.put(SingUpController());
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 240, 224, 84),
       body: Stack(
@@ -59,7 +48,7 @@ class _RegisterState extends State<Register> {
                       child: Column(
                         children: [
                           TextFormField(
-                            controller: _usernameController,
+                            controller: controller.usernameController,
                             decoration: InputDecoration(
                                 fillColor: Colors.white,
                                 filled: true,
@@ -79,7 +68,7 @@ class _RegisterState extends State<Register> {
                             height: 20,
                           ),
                           TextFormField(
-                            controller: _emailController,
+                            controller: controller.emailController,
                             keyboardType: TextInputType.emailAddress,
                             decoration: InputDecoration(
                                 fillColor: Colors.white,
@@ -99,7 +88,7 @@ class _RegisterState extends State<Register> {
                             height: 20,
                           ),
                           TextFormField(
-                            controller: _passwordController,
+                            controller: controller.passwordController,
                             obscureText: true,
                             decoration: InputDecoration(
                                 fillColor: Colors.white,
@@ -119,7 +108,7 @@ class _RegisterState extends State<Register> {
                             height: 20,
                           ),
                           TextFormField(
-                            controller: _numberController,
+                            controller: controller.numberController,
                             keyboardType: TextInputType.number,
                             decoration: InputDecoration(
                                 fillColor: Colors.white,
@@ -140,8 +129,7 @@ class _RegisterState extends State<Register> {
                             height: 20,
                           ),
                           TextFormField(
-                            controller: _addressController,
-                            keyboardType: TextInputType.streetAddress,
+                            controller: controller.addressController,
                             decoration: InputDecoration(
                                 fillColor: Colors.white,
                                 filled: true,
@@ -165,16 +153,16 @@ class _RegisterState extends State<Register> {
                   SizedBox(
                     width: 140,
                     child: OutlinedButton(
-                        onPressed: () {
+                        onPressed: () async {
+                          //var controller1 = Get.put(SingUpController());
                           if (_formKey.currentState!.validate()) {
-                            setState(() {
-                              loading = true;
-                            });
-                            _auth.createUserWithEmailAndPassword(
-                                email: _emailController.text.toString(),
-                                password: _passwordController.text.toString());
-
-                                Navigator.push(context, MaterialPageRoute(builder: (context) => const Home()));
+                            await controller.registerUsers(
+                              controller.emailController.text.trim(),
+                              controller.passwordController.text.trim(),
+                              controller.usernameController.text.trim(),
+                              controller.numberController.text.trim(),
+                              controller.addressController.text.trim(),
+                            );
                           }
                         },
                         style: OutlinedButton.styleFrom(
@@ -183,7 +171,7 @@ class _RegisterState extends State<Register> {
                                 borderRadius: BorderRadius.circular(12)),
                             side: const BorderSide(color: Colors.black)),
                         child: loading
-                            ? CircularProgressIndicator()
+                            ? const CircularProgressIndicator()
                             : const Text(
                                 "Sign in",
                                 style: TextStyle(

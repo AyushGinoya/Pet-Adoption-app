@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:pet_adoption_app/routes/home.dart';
 import 'package:pet_adoption_app/routes/login.dart';
 import 'package:pet_adoption_app/routes/register.dart';
@@ -16,7 +17,7 @@ void main() async {
       messagingSenderId: '220029605349',
     ),
   );
-  runApp(MaterialApp(
+  runApp(GetMaterialApp(
     home: const Text('Pet-Adoption-App'),
     debugShowCheckedModeBanner: false,
     initialRoute: 'register',

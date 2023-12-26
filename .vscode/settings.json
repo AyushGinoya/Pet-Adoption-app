@@ -1,6 +1,13 @@
 {
   "git.ignoreLimitWarning": true,
-  "cSpell.words": ["ARGB"],
+  "cSpell.words": [
+    "ARGB",
+    "Emailand",
+    "firabase",
+    "firebaseapp",
+    "Getx",
+    "Ymqf"
+  ],
   "cmake.sourceDirectory": "F:/Program/Project/pet_adoption_app/windows/runner",
   "java.configuration.updateBuildConfiguration": "interactive"
 }
