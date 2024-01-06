@@ -20,7 +20,7 @@ class SingUpController extends GetxController {
   }
 
   Future<void> registerUsers(String email, String password, String username,
-      String mobile, String address) async {
+      String mobile, String address,String pass) async {
     try {
       UserCredential userCredential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
@@ -28,11 +28,12 @@ class SingUpController extends GetxController {
       if (userCredential.user != null) {
         DatabaseReference databaseRef = FirebaseDatabase.instance.ref('users');
 
-        await databaseRef.child(userCredential.user!.uid).set({
+        await databaseRef.child(username).set({
           'username': username,
           'email': email,
           'mobile': mobile,
           'address': address,
+          'password': pass,
         });
 
         await Get.to(() => const Home());
@@ -41,7 +42,6 @@ class SingUpController extends GetxController {
       }
     } catch (e) {
       print('Error creating user: $e');
-      // Handle registration failure - Display an error message, prompt user to try again, etc.
     }
   }
 }

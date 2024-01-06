@@ -1,9 +1,7 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pet_adoption_app/helper/sing_up_controller.dart';
-import 'package:pet_adoption_app/routes/home.dart';
 import 'package:pet_adoption_app/routes/login.dart';
 
 class Register extends StatefulWidget {
@@ -154,7 +152,9 @@ class _RegisterState extends State<Register> {
                     width: 140,
                     child: OutlinedButton(
                         onPressed: () async {
-                          //var controller1 = Get.put(SingUpController());
+                          setState(() {
+                            loading = true;
+                          });
                           if (_formKey.currentState!.validate()) {
                             await controller.registerUsers(
                               controller.emailController.text.trim(),
@@ -162,7 +162,21 @@ class _RegisterState extends State<Register> {
                               controller.usernameController.text.trim(),
                               controller.numberController.text.trim(),
                               controller.addressController.text.trim(),
+                              controller.passwordController.text.trim(),
                             );
+
+                            setState(() {
+                              loading = false;
+                            });
+
+                            loading
+                                ? const CircularProgressIndicator()
+                                : const Text(
+                                    "Sign in",
+                                    style: TextStyle(
+                                        fontFamily: 'AppFont',
+                                        color: Colors.black),
+                                  );
                           }
                         },
                         style: OutlinedButton.styleFrom(
@@ -178,9 +192,9 @@ class _RegisterState extends State<Register> {
                                     fontFamily: 'AppFont', color: Colors.black),
                               )),
                   ),
-                  const SizedBox(
-                    height: 20,
-                  ),
+                  // const SizedBox(
+                  //   height: 20,
+                  // ),
                   TextButton(
                       onPressed: () {
                         Navigator.push(
