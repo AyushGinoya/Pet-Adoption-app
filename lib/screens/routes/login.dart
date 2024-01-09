@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pet_adoption_app/helper/login_cintroller.dart';
+import 'package:pet_adoption_app/helper/login_controller.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -47,7 +47,7 @@ class _LoginState extends State<Login> {
                       children: [
                         TextFormField(
                           controller: _emailController,
-                          decoration: InputDecoration(
+                            decoration: InputDecoration(
                             fillColor: Colors.white,
                             filled: true,
                             hintText: 'email',
@@ -94,7 +94,7 @@ class _LoginState extends State<Login> {
                   SizedBox(
                     width: 140,
                     child: ElevatedButton(
-                      onPressed: () async {
+                      onPressed: () async {   
                         if (_formKey.currentState!.validate()) {
                           setState(() {
                             loading = true;
@@ -109,7 +109,6 @@ class _LoginState extends State<Login> {
                         }
                       },
                       style: ElevatedButton.styleFrom(
-                        primary: Colors.white,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                           side: const BorderSide(color: Colors.black),

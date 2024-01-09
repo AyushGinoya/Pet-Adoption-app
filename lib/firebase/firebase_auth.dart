@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
-import 'package:pet_adoption_app/routes/home.dart';
-import 'package:pet_adoption_app/routes/register.dart';
+import 'package:pet_adoption_app/screens/navigation%20bar/home.dart';
+import 'package:pet_adoption_app/screens/routes/register.dart';
 class FirebaseAuthentication extends GetxController {
    static FirebaseAuthentication get instance => FirebaseAuthentication();
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -30,7 +30,7 @@ class FirebaseAuthentication extends GetxController {
           .createUserWithEmailAndPassword(email: email, password: password);
       return userCredential;
     } catch (e) {
-      print("Error creating user: $e");
+      //print("Error creating user: $e");
       return null;
     }
   }
