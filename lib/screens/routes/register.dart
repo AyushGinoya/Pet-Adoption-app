@@ -185,7 +185,11 @@ class _RegisterState extends State<Register> {
                                 borderRadius: BorderRadius.circular(12)),
                             side: const BorderSide(color: Colors.black)),
                         child: loading
-                            ? const CircularProgressIndicator()
+                            ? const CircularProgressIndicator(
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  Colors.black,
+                                ),
+                              )
                             : const Text(
                                 "Sign in",
                                 style: TextStyle(

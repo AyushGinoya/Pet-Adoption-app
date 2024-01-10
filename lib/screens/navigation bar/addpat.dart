@@ -1,9 +1,11 @@
+import 'dart:developer';
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:uuid/uuid.dart';
 
 class AddPat extends StatefulWidget {
   const AddPat({super.key});
@@ -15,18 +17,17 @@ class AddPat extends StatefulWidget {
 class _AddPatState extends State<AddPat> {
   final _formKey = GlobalKey<FormState>();
 
+  String? id = "ginoyaayushii123@gmail.com";
   late User? user = FirebaseAuth.instance.currentUser;
-  File? _img;
-  final picker = ImagePicker();
+  final database = FirebaseDatabase.instance.ref('petsInfo');
+  late File? _img;
   String imgUrl = '';
-  String? id;
-  Future getImage() async {
-    final pickedImg = await picker.pickImage(source: ImageSource.gallery);
-    setState(() {
-      if (pickedImg != null) {
-        _img = File(pickedImg.path);
-      }
-    });
+  late bool _isLoading = false;
+
+  @override
+  void initState() {
+    _img = null;
+    super.initState();
   }
 
   final TextEditingController _nameController = TextEditingController();
@@ -64,7 +65,20 @@ class _AddPatState extends State<AddPat> {
                   height: 20,
                 ),
                 ElevatedButton(
-                  onPressed: getImage,
+                  onPressed: () async {
+                    XFile? selectedImage = await ImagePicker()
+                        .pickImage(source: ImageSource.gallery);
+
+                    if (selectedImage != null) {
+                      File picFile = File(selectedImage.path);
+                      setState(() {
+                        _img = picFile;
+                      });
+                      log("Image selected!");
+                    } else {
+                      log("Image not selected");
+                    }
+                  },
                   style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -157,17 +171,23 @@ class _AddPatState extends State<AddPat> {
                 SizedBox(
                   child: ElevatedButton(
                     onPressed: () async {
-                      id = user!.email;
+                      id = user!.displayName;
                       if (_img == null) {
-                        print('No image selected');
+                        log('No image selected');
                         return;
                       }
                       try {
-                        Reference storageReference = FirebaseStorage.instance
+                        setState(() {
+                          // Set _isLoading to true to display CircularProgressIndicator
+                          _isLoading = true;
+                        });
+                        UploadTask uploadTask = FirebaseStorage.instance
                             .ref()
-                            .child('users/username');
+                            .child('patesImages')
+                            .child(id!)
+                            .child(const Uuid().v1())
+                            .putFile(_img!);
 
-                        UploadTask uploadTask = storageReference.putFile(_img!);
                         TaskSnapshot snapshot = await uploadTask;
 
                         if (snapshot.state == TaskState.success) {
@@ -184,19 +204,26 @@ class _AddPatState extends State<AddPat> {
                             'imageUrl': imgUrl,
                           };
 
-                          saveImageUrlToDatabase(imgUrl, petData, id);
+                          await database
+                              .child(id!)
+                              .child(const Uuid().v4())
+                              .set(petData);
 
-                          // _nameController.clear();
-                          // _ageController.clear();
-                          // _genderController.clear();
-                          // _typeController.clear();
-                          // _heightController.clear();
-                          // setState(() {
-                          //   _img = null;
-                          // });
+                          _nameController.clear();
+                          _ageController.clear();
+                          _genderController.clear();
+                          _typeController.clear();
+                          _heightController.clear();
+                          setState(() {
+                            _img = null;
+                            _isLoading = false;
+                          });
                         }
                       } catch (e) {
-                        print('Error uploading image or adding data: $e');
+                        log('Error uploading image or adding data: $e');
+                        setState(() {
+                          _isLoading = false;
+                        });
                       }
                     },
                     style: ElevatedButton.styleFrom(
@@ -205,7 +232,13 @@ class _AddPatState extends State<AddPat> {
                         side: const BorderSide(color: Colors.black),
                       ),
                     ),
-                    child: const Text('Add to App'),
+                    child: _isLoading
+                        ? const CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.black,
+                            ),
+                          )
+                        : const Text('Add to App'),
                   ),
                 ),
               ],
@@ -215,11 +248,4 @@ class _AddPatState extends State<AddPat> {
       ),
     );
   }
-}
-
-Future<void> saveImageUrlToDatabase(
-    String imageUrl, Map<String, dynamic> petData, String? id) async {
-  DatabaseReference databaseReference = FirebaseDatabase.instance.ref('pets');
-
-  await databaseReference.child(id!).set(petData);
 }

@@ -11,6 +11,7 @@ import 'package:pet_adoption_app/screens/routes/register.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   await Firebase.initializeApp(
     options: const FirebaseOptions(
       apiKey: 'AIzaSyCgOxtS5rgQExGpjCV4NeYmqfL08ZgM1vA',
@@ -25,7 +26,7 @@ void main() async {
   runApp(GetMaterialApp(
     home: const Text('Pet-Adoption-App'),
     debugShowCheckedModeBanner: false,
-    initialRoute: 'login',
+    initialRoute: 'register',
     routes: {
       'register': (context) => const Register(),
       'login': (context) => const Login(),
