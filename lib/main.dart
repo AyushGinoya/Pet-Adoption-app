@@ -26,7 +26,7 @@ void main() async {
   runApp(GetMaterialApp(
     home: const Text('Pet-Adoption-App'),
     debugShowCheckedModeBanner: false,
-    initialRoute: 'register',
+    initialRoute: 'navigation',
     routes: {
       'register': (context) => const Register(),
       'login': (context) => const Login(),

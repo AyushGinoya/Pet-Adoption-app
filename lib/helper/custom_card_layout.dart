@@ -1,19 +1,56 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class CustomCart {
-  Widget cartWidget(
-      String pName, String pAge, String pType, String pSubType, String url) {
-    return const Padding(
-      padding: EdgeInsets.fromLTRB(20, 10, 10, 5),
-      child: SizedBox(
-        height: 200.0,
-        child: Column(
-          children: [
-            // Text('pet name - , $pName'),
-            // Text('pet age - , $pAge'),
-            // Text('pet Type - , $pType'),
-            // Text('pet subType - , $pSubType'),
-          ],
+  Widget cartWidget(String name, int age, int height, String gender,
+      String imageUrl, String user) {
+    return Padding(
+      padding: const EdgeInsets.all(10),
+      child: Card(
+        elevation: 5,
+        child: Padding(
+          padding: const EdgeInsets.all(8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: CachedNetworkImage(
+                  imageUrl: imageUrl,
+                  placeholder: (context, url) =>
+                      const CircularProgressIndicator(),
+                  errorWidget: (context, url, error) => const Icon(Icons.error),
+                  height: 300,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              Text('Owner: $user'),
+              Text('Name: $name'),
+              Text('Age: $age'),
+              Text('Height: $height'),
+              Text('Gender: $gender'),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  ElevatedButton(
+                      onPressed: () {},
+                      child: const Text(
+                        'Buy',
+                        style: TextStyle(
+                            fontFamily: 'AppFont', color: Colors.black),
+                      )),
+                  ElevatedButton(
+                      onPressed: () {},
+                      child: const Text(
+                        'Add to cart',
+                        style: TextStyle(
+                            fontFamily: 'AppFont', color: Colors.black),
+                      )),
+                ],
+              )
+            ],
+          ),
         ),
       ),
     );

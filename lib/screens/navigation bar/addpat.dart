@@ -178,7 +178,6 @@ class _AddPatState extends State<AddPat> {
                       }
                       try {
                         setState(() {
-                          // Set _isLoading to true to display CircularProgressIndicator
                           _isLoading = true;
                         });
                         UploadTask uploadTask = FirebaseStorage.instance
