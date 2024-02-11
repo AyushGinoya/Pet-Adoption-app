@@ -34,8 +34,8 @@ class _NavigationMenuState extends State<NavigationMenu> {
                 label: 'Add',
               ),
               NavigationDestination(
-                icon: Icon(Icons.shopping_bag_outlined),
-                label: 'Cart',
+                icon: Icon(Icons.chat_sharp),
+                label: 'Chats',
               ),
               NavigationDestination(
                 icon: Icon(Icons.account_box_sharp),

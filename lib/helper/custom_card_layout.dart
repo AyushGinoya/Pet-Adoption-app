@@ -3,7 +3,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 
 class CustomCart {
   Widget cartWidget(String name, int age, int height, String gender,
-      String imageUrl, String user) {
+      String imageUrl, String type, String subType, String user) {
+    Color buyc = const Color(0xFFFF9800);
+    Color atc = const Color(0xFF4CAF50);
+
     return Padding(
       padding: const EdgeInsets.all(10),
       child: Card(
@@ -25,16 +28,42 @@ class CustomCart {
                   fit: BoxFit.cover,
                 ),
               ),
-              Text('Owner: $user'),
-              Text('Name: $name'),
-              Text('Age: $age'),
-              Text('Height: $height'),
-              Text('Gender: $gender'),
+              Text(
+                'Owner: $user',
+                style: const TextStyle(fontFamily: 'AppFont'),
+              ),
+              Text(
+                'Name: $name',
+                style: const TextStyle(fontFamily: 'AppFont'),
+              ),
+              Text(
+                'Type: $type',
+                style: const TextStyle(fontFamily: 'AppFont'),
+              ),
+              Text(
+                'Subtype: $subType',
+                style: const TextStyle(fontFamily: 'AppFont'),
+              ),
+              Text(
+                'Age: $age',
+                style: const TextStyle(fontFamily: 'AppFont'),
+              ),
+              Text(
+                'Height: $height',
+                style: const TextStyle(fontFamily: 'AppFont'),
+              ),
+              Text(
+                'Gender: $gender',
+                style: const TextStyle(fontFamily: 'AppFont'),
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   ElevatedButton(
                       onPressed: () {},
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all<Color>(buyc),
+                      ),
                       child: const Text(
                         'Buy',
                         style: TextStyle(
@@ -42,6 +71,9 @@ class CustomCart {
                       )),
                   ElevatedButton(
                       onPressed: () {},
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all<Color>(atc),
+                      ),
                       child: const Text(
                         'Add to cart',
                         style: TextStyle(

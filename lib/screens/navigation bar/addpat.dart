@@ -17,7 +17,7 @@ class AddPat extends StatefulWidget {
 class _AddPatState extends State<AddPat> {
   final _formKey = GlobalKey<FormState>();
 
-  String? id = "ginoyaayushii123@gmail.com";
+  String? id = "ayush";
   late User? user = FirebaseAuth.instance.currentUser;
   final database = FirebaseDatabase.instance.ref('petsInfo');
   late File? _img;
@@ -35,6 +35,7 @@ class _AddPatState extends State<AddPat> {
   final TextEditingController _typeController = TextEditingController();
   final TextEditingController _genderController = TextEditingController();
   final TextEditingController _heightController = TextEditingController();
+  final TextEditingController _subTypeController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -151,7 +152,25 @@ class _AddPatState extends State<AddPat> {
                   height: 20,
                 ),
                 TextFormField(
+                  controller: _subTypeController,
+                  decoration: InputDecoration(
+                      hintText: 'Enter Sub type',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      )),
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return "Enter sub type";
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                TextFormField(
                   controller: _heightController,
+                  keyboardType: TextInputType.number,
                   decoration: InputDecoration(
                     hintText: 'Enter height(in cm)',
                     border: OutlineInputBorder(
@@ -171,7 +190,11 @@ class _AddPatState extends State<AddPat> {
                 SizedBox(
                   child: ElevatedButton(
                     onPressed: () async {
-                      id = user!.displayName;
+                      if (user == null) {
+                        id = 'ayush';
+                      } else {
+                        id = user!.displayName;
+                      }
                       if (_img == null) {
                         log('No image selected');
                         return;
@@ -199,6 +222,7 @@ class _AddPatState extends State<AddPat> {
                             'age': int.parse(_ageController.text),
                             'gender': _genderController.text,
                             'type': _typeController.text,
+                            'subType': _subTypeController.text,
                             'height': int.parse(_heightController.text),
                             'imageUrl': imgUrl,
                           };
@@ -213,6 +237,7 @@ class _AddPatState extends State<AddPat> {
                           _genderController.clear();
                           _typeController.clear();
                           _heightController.clear();
+                          _subTypeController.clear();
                           setState(() {
                             _img = null;
                             _isLoading = false;

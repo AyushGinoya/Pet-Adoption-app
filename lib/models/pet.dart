@@ -4,6 +4,8 @@ class Pet {
   final int height;
   final String gender;
   final String imageUrl;
+  final String subType;
+  final String type;
 
   Pet({
     required this.name,
@@ -11,6 +13,8 @@ class Pet {
     required this.height,
     required this.gender,
     required this.imageUrl,
+    required this.subType,
+    required this.type,
   });
 
   factory Pet.fromJson(Map<String, dynamic> json) {
@@ -20,6 +24,8 @@ class Pet {
       height: json['height'] ?? 0,
       gender: json['gender'] ?? '',
       imageUrl: json['imageUrl'] ?? '',
+      subType: json['subType'] ?? '',
+      type: json['type'] ?? '',
     );
   }
 }

@@ -1,10 +1,14 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:pet_adoption_app/helper/custom_card_layout.dart';
-import 'package:pet_adoption_app/helper/pet.dart';
+import 'package:pet_adoption_app/models/pet.dart';
+import 'package:pet_adoption_app/models/user_model.dart';
 
 class Home extends StatefulWidget {
-  const Home({super.key});
+  final UserModel userModel;
+  final User firebaseUser;
+  const Home({super.key, required this.userModel, required this.firebaseUser});
 
   @override
   State<Home> createState() => _HomeState();
@@ -55,6 +59,8 @@ class _HomeState extends State<Home> {
                 pets[index].height,
                 pets[index].gender,
                 pets[index].imageUrl,
+                pets[index].type,
+                pets[index].subType,
                 user,
               );
             },
