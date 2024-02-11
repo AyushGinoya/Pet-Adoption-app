@@ -7,8 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pet_adoption_app/models/user_model.dart';
-import 'package:pet_adoption_app/screens/navigation%20bar/home.dart';
-import 'package:pet_adoption_app/screens/navigation%20bar/navigation_bar.dart';
+import 'package:pet_adoption_app/screens/navigation_bar.dart';
 
 class CompleteRegister extends StatefulWidget {
   final UserModel userModel;

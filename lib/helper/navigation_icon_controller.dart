@@ -1,12 +1,11 @@
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:pet_adoption_app/helper/get_user_model.dart';
 import 'package:pet_adoption_app/models/user_model.dart';
-import 'package:pet_adoption_app/screens/navigation%20bar/addpat.dart';
-import 'package:pet_adoption_app/screens/navigation%20bar/chats.dart';
-import 'package:pet_adoption_app/screens/navigation%20bar/home.dart';
-import 'package:pet_adoption_app/screens/navigation%20bar/profile.dart';
+import 'package:pet_adoption_app/screens/routes/addpat.dart';
+import 'package:pet_adoption_app/screens/routes/chats.dart';
+import 'package:pet_adoption_app/screens/routes/home.dart';
+import 'package:pet_adoption_app/screens/routes/profile.dart';
 import 'package:flutter/material.dart';
 
 class NavigationIconController extends GetxController {
@@ -29,7 +28,7 @@ class NavigationIconController extends GetxController {
         screens.value = [
           Home(userModel: userModel1!, firebaseUser: user),
           const AddPat(),
-          const Chats(),
+          Chats(userModel: userModel1!, firebaseUser: user),
           const Profile(),
         ];
       } else {

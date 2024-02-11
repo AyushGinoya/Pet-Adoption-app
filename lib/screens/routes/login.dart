@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:pet_adoption_app/screens/navigation%20bar/navigation_bar.dart';
+import 'package:pet_adoption_app/screens/navigation_bar.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
