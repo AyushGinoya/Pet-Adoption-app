@@ -27,7 +27,7 @@ class NavigationIconController extends GetxController {
         userModel1 = um;
         screens.value = [
           Home(userModel: userModel1!, firebaseUser: user),
-          const AddPat(),
+          AddPat(userModel: userModel1!, firebaseUser: user),
           Chats(userModel: userModel1!, firebaseUser: user),
           const Profile(),
         ];

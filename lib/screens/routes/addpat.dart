@@ -1,14 +1,19 @@
 import 'dart:developer';
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:pet_adoption_app/models/user_model.dart';
 import 'package:uuid/uuid.dart';
 
 class AddPat extends StatefulWidget {
-  const AddPat({super.key});
+  final UserModel userModel;
+  final User firebaseUser;
+  const AddPat(
+      {super.key, required this.userModel, required this.firebaseUser});
 
   @override
   State<AddPat> createState() => _AddPatState();
@@ -17,9 +22,9 @@ class AddPat extends StatefulWidget {
 class _AddPatState extends State<AddPat> {
   final _formKey = GlobalKey<FormState>();
 
-  String? id = "ayush";
-  late User? user = FirebaseAuth.instance.currentUser;
-  final database = FirebaseDatabase.instance.ref('petsInfo');
+  String? id;
+
+  final database = FirebaseFirestore.instance.collection("petsInfo");
   late File? _img;
   String imgUrl = '';
   late bool _isLoading = false;
@@ -28,6 +33,7 @@ class _AddPatState extends State<AddPat> {
   void initState() {
     _img = null;
     super.initState();
+    id = widget.userModel.uName;
   }
 
   final TextEditingController _nameController = TextEditingController();
@@ -190,11 +196,6 @@ class _AddPatState extends State<AddPat> {
                 SizedBox(
                   child: ElevatedButton(
                     onPressed: () async {
-                      if (user == null) {
-                        id = 'ayush';
-                      } else {
-                        id = user!.displayName;
-                      }
                       if (_img == null) {
                         log('No image selected');
                         return;
@@ -228,8 +229,9 @@ class _AddPatState extends State<AddPat> {
                           };
 
                           await database
-                              .child(id!)
-                              .child(const Uuid().v4())
+                              .doc(id)
+                              .collection(widget.userModel.uEmail.toString())
+                              .doc(const Uuid().v4())
                               .set(petData);
 
                           _nameController.clear();

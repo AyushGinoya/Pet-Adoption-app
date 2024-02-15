@@ -20,10 +20,11 @@ class _NavigationMenuState extends State<NavigationMenu> {
         () => NavigationBar(
             elevation: 0,
             height: 80,
-             indicatorColor:  const Color.fromARGB(255, 240, 224, 84),
+            indicatorColor: const Color.fromARGB(255, 240, 224, 84),
             selectedIndex: controller.selectIndex.value,
-            onDestinationSelected: (index) =>
-                {controller.selectIndex.value = index},
+            onDestinationSelected: (index) {
+              controller.selectIndex.value = index;
+            },
             destinations: const [
               NavigationDestination(
                 icon: Icon(Icons.home),
@@ -43,7 +44,10 @@ class _NavigationMenuState extends State<NavigationMenu> {
               ),
             ]),
       ),
-      body: Obx(() => controller.screens[controller.selectIndex.value]),
+      // Display the selected screen
+      body: Obx(() => controller.screens.isNotEmpty
+          ? controller.screens[controller.selectIndex.value]
+          : const CircularProgressIndicator()),
     );
   }
 }

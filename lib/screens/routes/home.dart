@@ -1,7 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:pet_adoption_app/helper/custom_card_layout.dart';
+import 'package:pet_adoption_app/helper/get_pet_model.dart';
 import 'package:pet_adoption_app/models/pet.dart';
 import 'package:pet_adoption_app/models/user_model.dart';
 
@@ -15,7 +17,21 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  String user = "ayush";
+  late String user;
+  Pet? petModel;
+
+  @override
+  void initState() {
+    super.initState();
+    user = widget.userModel.uName.toString();
+    fetchPetModel();
+  }
+
+  Future<void> fetchPetModel() async {
+    var fetchedPetModel = await GetPetModel.getPetModelById(user);
+    petModel = fetchedPetModel;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,39 +45,29 @@ class _HomeState extends State<Home> {
       ),
       backgroundColor: const Color.fromARGB(255, 240, 224, 84),
       body: StreamBuilder(
-        stream: FirebaseDatabase.instance.ref('petsInfo').onValue,
-        builder: (context, AsyncSnapshot<DatabaseEvent> snapshot) {
+        stream: FirebaseFirestore.instance
+            .collection('petsInfo')
+            .doc(user)
+            .collection(widget.userModel.uEmail.toString())
+            .snapshots(),
+        builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.hasError) {
-            return const Text('Something went wrong');
+            return Text('Error: ${snapshot.error}');
           }
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          List<Pet> pets = [];
-          DataSnapshot dataSnapshot = snapshot.data!.snapshot;
-          if (dataSnapshot.exists) {
-            for (var petKeySnapshot in dataSnapshot.children) {
-              for (var petSubKeySnapshot in petKeySnapshot.children) {
-                Map<String, dynamic> petData =
-                    Map<String, dynamic>.from(petSubKeySnapshot.value as Map);
-                pets.add(Pet.fromJson(petData));
-              }
-            }
-          }
+          List<Pet> pets = snapshot.data!.docs
+              .map((doc) => Pet.fromMap(doc.data() as Map<String, dynamic>))
+              .toList();
 
           return ListView.builder(
             itemCount: pets.length,
             itemBuilder: (BuildContext context, int index) {
               return CustomCart().cartWidget(
-                pets[index].name,
-                pets[index].age,
-                pets[index].height,
-                pets[index].gender,
-                pets[index].imageUrl,
-                pets[index].type,
-                pets[index].subType,
-                user,
+                pet: pets[index],
+                user: user,
               );
             },
           );

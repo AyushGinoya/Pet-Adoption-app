@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:pet_adoption_app/models/pet.dart';
 
 class CustomCart {
-  Widget cartWidget(String name, int age, int height, String gender,
-      String imageUrl, String type, String subType, String user) {
+  Widget cartWidget({required Pet pet, required String user}) {
     Color buyc = const Color(0xFFFF9800);
     Color atc = const Color(0xFF4CAF50);
 
@@ -19,7 +19,7 @@ class CustomCart {
               Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: CachedNetworkImage(
-                  imageUrl: imageUrl,
+                  imageUrl: pet.imageUrl ?? '',
                   placeholder: (context, url) =>
                       const CircularProgressIndicator(),
                   errorWidget: (context, url, error) => const Icon(Icons.error),
@@ -33,27 +33,27 @@ class CustomCart {
                 style: const TextStyle(fontFamily: 'AppFont'),
               ),
               Text(
-                'Name: $name',
+                'Name: ${pet.name}',
                 style: const TextStyle(fontFamily: 'AppFont'),
               ),
               Text(
-                'Type: $type',
+                'Type: ${pet.type}',
                 style: const TextStyle(fontFamily: 'AppFont'),
               ),
               Text(
-                'Subtype: $subType',
+                'Subtype: ${pet.subType}',
                 style: const TextStyle(fontFamily: 'AppFont'),
               ),
               Text(
-                'Age: $age',
+                'Age: ${pet.age}',
                 style: const TextStyle(fontFamily: 'AppFont'),
               ),
               Text(
-                'Height: $height',
+                'Height: ${pet.height}',
                 style: const TextStyle(fontFamily: 'AppFont'),
               ),
               Text(
-                'Gender: $gender',
+                'Gender: ${pet.gender}',
                 style: const TextStyle(fontFamily: 'AppFont'),
               ),
               Row(
