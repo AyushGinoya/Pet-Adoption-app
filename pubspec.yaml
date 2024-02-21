@@ -40,7 +40,7 @@ dependencies:
   firebase_app_check: ^0.2.1+8
   get: ^4.6.6
   firebase_storage: ^11.6.0
-  uuid: ^4.3.2
+  uuid: ^4.3.3
   cached_network_image: ^3.3.1
   cloud_firestore: ^4.15.4
   image_cropper: ^5.0.1

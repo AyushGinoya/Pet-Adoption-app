@@ -5,8 +5,9 @@ import 'package:pet_adoption_app/helper/get_user_model.dart';
 import 'package:pet_adoption_app/models/user_model.dart';
 import 'package:pet_adoption_app/screens/navigation_bar.dart';
 import 'package:pet_adoption_app/screens/routes/register.dart';
+import 'package:uuid/uuid.dart';
 
-
+var uuid = const Uuid();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   //await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);

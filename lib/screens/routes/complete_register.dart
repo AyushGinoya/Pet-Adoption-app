@@ -13,8 +13,7 @@ class CompleteRegister extends StatefulWidget {
   final UserModel userModel;
   final User firebaseUser;
   const CompleteRegister(
-      {Key? key, required this.firebaseUser, required this.userModel})
-      : super(key: key);
+      {super.key, required this.firebaseUser, required this.userModel});
 
   @override
   State<CompleteRegister> createState() => _CompleteRegisterState();

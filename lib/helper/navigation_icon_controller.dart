@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:pet_adoption_app/helper/get_user_model.dart';
@@ -32,7 +34,7 @@ class NavigationIconController extends GetxController {
           const Profile(),
         ];
       } else {
-        print("Model is Null");
+        log('Model is Null');
       }
       update(); // Notify listeners about changes
     }

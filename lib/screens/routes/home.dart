@@ -1,9 +1,9 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:pet_adoption_app/helper/custom_card_layout.dart';
-import 'package:pet_adoption_app/helper/get_pet_model.dart';
 import 'package:pet_adoption_app/models/pet.dart';
 import 'package:pet_adoption_app/models/user_model.dart';
 
@@ -24,12 +24,6 @@ class _HomeState extends State<Home> {
   void initState() {
     super.initState();
     user = widget.userModel.uName.toString();
-    fetchPetModel();
-  }
-
-  Future<void> fetchPetModel() async {
-    var fetchedPetModel = await GetPetModel.getPetModelById(user);
-    petModel = fetchedPetModel;
   }
 
   @override
@@ -57,10 +51,21 @@ class _HomeState extends State<Home> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
+          log('Snapshot Data: ${snapshot.data?.docs.length}');
 
-          List<Pet> pets = snapshot.data!.docs
-              .map((doc) => Pet.fromMap(doc.data() as Map<String, dynamic>))
-              .toList();
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return const Center(
+              child: Text(
+                "No pets found.",
+                style: TextStyle(fontFamily: 'AppFont'),
+              ),
+            );
+          }
+
+          List<Pet> pets = snapshot.data!.docs.map((doc) {
+            log('Document Data: ${doc.data()}');
+            return Pet.fromMap(doc.data() as Map<String, dynamic>);
+          }).toList();
 
           return ListView.builder(
             itemCount: pets.length,

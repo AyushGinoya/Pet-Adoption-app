@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pet_adoption_app/models/user_model.dart';
@@ -66,7 +68,7 @@ class _RegisterState extends State<Register> {
       credential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: pass);
     } on FirebaseAuthException catch (e) {
-      print(e.code.toString());
+      log(e.code.toString());
     }
 
     if (credential != null) {
@@ -84,7 +86,7 @@ class _RegisterState extends State<Register> {
           .collection("users")
           .doc(uid)
           .set(newUser.toMap())
-          .then((value) => print("new user created"));
+          .then((value) => log("new user created"));
 
       Navigator.push(
         context,

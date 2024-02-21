@@ -4,7 +4,6 @@ import 'package:pet_adoption_app/models/pet.dart';
 
 class CustomCart {
   Widget cartWidget({required Pet pet, required String user}) {
-    Color buyc = const Color(0xFFFF9800);
     Color atc = const Color(0xFF4CAF50);
 
     return Padding(
@@ -56,31 +55,18 @@ class CustomCart {
                 'Gender: ${pet.gender}',
                 style: const TextStyle(fontFamily: 'AppFont'),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  ElevatedButton(
-                      onPressed: () {},
-                      style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all<Color>(buyc),
-                      ),
-                      child: const Text(
-                        'Buy',
-                        style: TextStyle(
-                            fontFamily: 'AppFont', color: Colors.black),
-                      )),
-                  ElevatedButton(
-                      onPressed: () {},
-                      style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all<Color>(atc),
-                      ),
-                      child: const Text(
-                        'Add to cart',
-                        style: TextStyle(
-                            fontFamily: 'AppFont', color: Colors.black),
-                      )),
-                ],
-              )
+              Center(
+                child: ElevatedButton(
+                    onPressed: () {},
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all<Color>(atc),
+                    ),
+                    child: const Text(
+                      'Connect',
+                      style:
+                          TextStyle(fontFamily: 'AppFont', color: Colors.black),
+                    )),
+              ),
             ],
           ),
         ),
