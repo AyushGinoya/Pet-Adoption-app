@@ -25,14 +25,14 @@ class UserModel {
     uProfile = map["uProfile"];
   }
 
-  Map<String,dynamic> toMap(){
+  Map<String, dynamic> toMap() {
     return {
-      "uName":uName,
-      "uPassword":uPassword,
-      "uEmail":uEmail,
-      "uNumber":uNumber,
-      "uAddress":uAddress,
-      "uProfile":uProfile
+      "uName": uName,
+      "uPassword": uPassword,
+      "uEmail": uEmail,
+      "uNumber": uNumber,
+      "uAddress": uAddress,
+      "uProfile": uProfile
     };
   }
 }

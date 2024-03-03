@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -87,13 +86,17 @@ class _CompleteRegisterState extends State<CompleteRegister> {
     widget.userModel.uAddress = address;
     widget.userModel.uProfile = imgUrl;
 
+    String uid = widget.firebaseUser.uid;
+
     await FirebaseFirestore.instance
         .collection("users")
-        .doc(widget.userModel.uName)
+        .doc(uid)
         .set(widget.userModel.toMap())
         .then((value) => Navigator.of(context).push(
               MaterialPageRoute(
-                  builder: (context) => const NavigationMenu()),
+                  builder: (context) => NavigationMenu(
+                      userModel: widget.userModel,
+                      firebaseUser: widget.firebaseUser)),
             ));
   }
 

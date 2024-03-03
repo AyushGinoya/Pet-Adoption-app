@@ -1,5 +1,4 @@
-import 'dart:developer';
-
+import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +25,39 @@ class _HomeState extends State<Home> {
     user = widget.userModel.uName.toString();
   }
 
+  Stream<List<Pet>> getPetsStream() async* {
+    List<Pet> pets = [];
+    try {
+      DocumentSnapshot docSnapshot = await FirebaseFirestore.instance
+          .collection("petsInfo")
+          .doc("aayush")
+          .get();
+      print('Fetched docSnapshot: ${docSnapshot.exists}');
+
+      // for (var userDoc in userSnapshot.docs) {
+      //   String username = userDoc.id;
+      //   QuerySnapshot emailSnapshot =
+      //       await userDoc.reference.collection(username).get();
+      //   print(
+      //       'Fetched emailSnapshot for $username: ${emailSnapshot.docs.length}');
+
+      //   for (var emailDoc in emailSnapshot.docs) {
+      //     String pet = emailDoc.id;
+      //     QuerySnapshot petsSnap =
+      //         await emailDoc.reference.collection(pet).get();
+      //     print('Fetched petsSnap for $pet: ${petsSnap.docs.length}');
+
+      //     for (var petDoc in petsSnap.docs) {
+      //       pets.add(Pet.fromMap(petDoc.data() as Map<String, dynamic>));
+      //     }
+      //   }
+      // }
+    } catch (e) {
+      print('Error fetching pets: $e');
+    }
+    yield pets;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,22 +70,17 @@ class _HomeState extends State<Home> {
         titleSpacing: 2.0,
       ),
       backgroundColor: const Color.fromARGB(255, 240, 224, 84),
-      body: StreamBuilder(
-        stream: FirebaseFirestore.instance
-            .collection('petsInfo')
-            .doc(user)
-            .collection(widget.userModel.uEmail.toString())
-            .snapshots(),
-        builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+      body: StreamBuilder<List<Pet>>(
+        stream: getPetsStream(),
+        builder: (context, AsyncSnapshot<List<Pet>> snapshot) {
           if (snapshot.hasError) {
             return Text('Error: ${snapshot.error}');
           }
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
-          log('Snapshot Data: ${snapshot.data?.docs.length}');
 
-          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+          if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return const Center(
               child: Text(
                 "No pets found.",
@@ -62,10 +89,7 @@ class _HomeState extends State<Home> {
             );
           }
 
-          List<Pet> pets = snapshot.data!.docs.map((doc) {
-            log('Document Data: ${doc.data()}');
-            return Pet.fromMap(doc.data() as Map<String, dynamic>);
-          }).toList();
+          List<Pet> pets = snapshot.data ?? [];
 
           return ListView.builder(
             itemCount: pets.length,

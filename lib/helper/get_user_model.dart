@@ -15,4 +15,17 @@ class GetUserModel {
 
     return userModel;
   }
+
+  static Future<UserModel?> getUserModelByName(String uName) async {
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection("users")
+        .where("uName", isEqualTo: uName)
+        .get();
+
+    if (querySnapshot.docs.isNotEmpty) {
+      DocumentSnapshot documentSnapshot = querySnapshot.docs.first;
+      return UserModel.fromMap(documentSnapshot.data() as Map<String, dynamic>);
+    }
+    return null;
+  }
 }

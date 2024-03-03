@@ -10,8 +10,6 @@ import 'package:uuid/uuid.dart';
 var uuid = const Uuid();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  //await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
   await Firebase.initializeApp(
     options: const FirebaseOptions(
       apiKey: 'AIzaSyCgOxtS5rgQExGpjCV4NeYmqfL08ZgM1vA',
@@ -59,9 +57,12 @@ class MyAppLoggedIn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: NavigationMenu(),
+      home: NavigationMenu(
+        userModel: userModel,
+        firebaseUser: firebaseUser,
+      ),
     );
   }
 }

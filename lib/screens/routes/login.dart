@@ -1,5 +1,9 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:pet_adoption_app/models/user_model.dart';
 import 'package:pet_adoption_app/screens/navigation_bar.dart';
 
 class Login extends StatefulWidget {
@@ -15,6 +19,7 @@ class _LoginState extends State<Login> {
   bool loading = false;
 
   void loginUser() async {
+    UserCredential? userCredential;
     String email = _emailController.text.trim();
     String password = _passwordController.text.trim();
 
@@ -35,19 +40,37 @@ class _LoginState extends State<Login> {
     });
 
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
+      userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
-      Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => const NavigationMenu()),
-      );
-      setState(() {
-        loading = false;
-      });
+
+      if (userCredential != null) {
+        DocumentSnapshot userData = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userCredential.user!.uid)
+            .get();
+
+        if (userData.exists) {
+          UserModel userModel =
+              UserModel.fromMap(userData.data() as Map<String, dynamic>);
+
+          Navigator.of(context).push(
+            MaterialPageRoute(
+                builder: (context) => NavigationMenu(
+                    userModel: userModel, firebaseUser: userCredential!.user!)),
+          );
+          setState(() {
+            loading = false;
+          });
+        }else{
+          print("User document does not exist.");
+        }
+      }
     } on FirebaseAuthException catch (e) {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(e.message ?? "Login Failed")));
+      Navigator.pop(context);
     }
 
     setState(() {

@@ -7,7 +7,6 @@ import 'package:pet_adoption_app/main.dart';
 import 'package:pet_adoption_app/models/chat_room_model.dart';
 import 'package:pet_adoption_app/models/message_model.dart';
 import 'package:pet_adoption_app/models/user_model.dart';
-import 'package:uuid/uuid.dart';
 
 class ChatRoomPage extends StatefulWidget {
   final UserModel targetUser;
@@ -117,7 +116,8 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                                     color: currentMessage.sender ==
                                             widget.userModel.uName
                                         ? Colors.blue[200]
-                                        : Colors.grey[300],
+                                        : const Color.fromARGB(
+                                            255, 100, 97, 97),
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   child: Text(
