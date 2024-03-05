@@ -31,12 +31,13 @@ class NavigationIconController extends GetxController {
           Home(userModel: userModel1!, firebaseUser: user),
           AddPat(userModel: userModel1!, firebaseUser: user),
           Chats(userModel: userModel1!, firebaseUser: user),
-          const Profile(),
+          Profile(userModel: userModel1!, firebaseUser: user),
         ];
       } else {
         log('Model is Null');
       }
-      update(); // Notify listeners about changes
+      // Notify listeners about changes
+      update();
     }
   }
 }

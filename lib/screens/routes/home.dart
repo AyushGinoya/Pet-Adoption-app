@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -28,11 +30,9 @@ class _HomeState extends State<Home> {
   Stream<List<Pet>> getPetsStream() async* {
     List<Pet> pets = [];
     try {
-      DocumentSnapshot docSnapshot = await FirebaseFirestore.instance
-          .collection("petsInfo")
-          .doc("aayush")
-          .get();
-      print('Fetched docSnapshot: ${docSnapshot.exists}');
+      QuerySnapshot<Map<String, dynamic>> docSnapshot =
+          await FirebaseFirestore.instance.collection("petsInfo").get();
+      print('Fetched docSnapshot: ${docSnapshot.docs.length}');
 
       // for (var userDoc in userSnapshot.docs) {
       //   String username = userDoc.id;
