@@ -45,29 +45,27 @@ class _LoginState extends State<Login> {
         password: password,
       );
 
-      if (userCredential != null) {
-        DocumentSnapshot userData = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(userCredential.user!.uid)
-            .get();
+      DocumentSnapshot userData = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userCredential.user!.uid)
+          .get();
 
-        if (userData.exists) {
-          UserModel userModel =
-              UserModel.fromMap(userData.data() as Map<String, dynamic>);
+      if (userData.exists) {
+        UserModel userModel =
+            UserModel.fromMap(userData.data() as Map<String, dynamic>);
 
-          Navigator.of(context).push(
-            MaterialPageRoute(
-                builder: (context) => NavigationMenu(
-                    userModel: userModel, firebaseUser: userCredential!.user!)),
-          );
-          setState(() {
-            loading = false;
-          });
-        }else{
-          print("User document does not exist.");
-        }
+        Navigator.of(context).push(
+          MaterialPageRoute(
+              builder: (context) => NavigationMenu(
+                  userModel: userModel, firebaseUser: userCredential!.user!)),
+        );
+        setState(() {
+          loading = false;
+        });
+      }else{
+        print("User document does not exist.");
       }
-    } on FirebaseAuthException catch (e) {
+        } on FirebaseAuthException catch (e) {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(e.message ?? "Login Failed")));
       Navigator.pop(context);

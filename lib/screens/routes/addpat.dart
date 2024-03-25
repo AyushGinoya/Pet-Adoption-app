@@ -23,6 +23,8 @@ class _AddPatState extends State<AddPat> {
 
   String? id;
 
+  String _selectedGender = 'Male';
+
   final database = FirebaseFirestore.instance.collection("petsInfo");
   late File? _img;
   String imgUrl = '';
@@ -119,20 +121,29 @@ class _AddPatState extends State<AddPat> {
                 const SizedBox(
                   height: 20,
                 ),
-                TextFormField(
-                  controller: _genderController,
-                  keyboardType: TextInputType.text,
-                  decoration: InputDecoration(
-                    hintText: 'Enter Gender',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return "Enter Gender";
-                    }
-                    return null;
+                const ListTile(
+                  title: Text('Gender'),
+                ),
+                RadioListTile<String>(
+                  title: const Text('Male'),
+                  value: 'Male',
+                  activeColor: const Color.fromARGB(255, 240, 224, 84),
+                  groupValue: _selectedGender,
+                  onChanged: (String? value) {
+                    setState(() {
+                      _selectedGender = value!;
+                    });
+                  },
+                ),
+                RadioListTile<String>(
+                  title: const Text('Female'),
+                  value: 'Female',
+                  activeColor: const Color.fromARGB(255, 240, 224, 84),
+                  groupValue: _selectedGender,
+                  onChanged: (String? value) {
+                    setState(() {
+                      _selectedGender = value!;
+                    });
                   },
                 ),
                 const SizedBox(
@@ -220,7 +231,7 @@ class _AddPatState extends State<AddPat> {
                           Map<String, dynamic> petData = {
                             'name': _nameController.text,
                             'age': int.parse(_ageController.text),
-                            'gender': _genderController.text,
+                            'gender': _selectedGender,
                             'type': _typeController.text,
                             'subType': _subTypeController.text,
                             'height': int.parse(_heightController.text),

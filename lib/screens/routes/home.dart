@@ -1,12 +1,9 @@
-// ignore_for_file: avoid_print
-
-import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:pet_adoption_app/helper/custom_card_layout.dart';
 import 'package:pet_adoption_app/models/pet.dart';
 import 'package:pet_adoption_app/models/user_model.dart';
+import 'package:pet_adoption_app/helper/custom_card_layout.dart';
 
 class Home extends StatefulWidget {
   final UserModel userModel;
@@ -19,43 +16,11 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   late String user;
-  Pet? petModel;
 
   @override
   void initState() {
     super.initState();
     user = widget.userModel.uName.toString();
-  }
-
-  Stream<List<Pet>> getPetsStream() async* {
-    List<Pet> pets = [];
-    try {
-      QuerySnapshot<Map<String, dynamic>> docSnapshot =
-          await FirebaseFirestore.instance.collection("petsInfo").get();
-      print('Fetched docSnapshot: ${docSnapshot.docs.length}');
-
-      // for (var userDoc in userSnapshot.docs) {
-      //   String username = userDoc.id;
-      //   QuerySnapshot emailSnapshot =
-      //       await userDoc.reference.collection(username).get();
-      //   print(
-      //       'Fetched emailSnapshot for $username: ${emailSnapshot.docs.length}');
-
-      //   for (var emailDoc in emailSnapshot.docs) {
-      //     String pet = emailDoc.id;
-      //     QuerySnapshot petsSnap =
-      //         await emailDoc.reference.collection(pet).get();
-      //     print('Fetched petsSnap for $pet: ${petsSnap.docs.length}');
-
-      //     for (var petDoc in petsSnap.docs) {
-      //       pets.add(Pet.fromMap(petDoc.data() as Map<String, dynamic>));
-      //     }
-      //   }
-      // }
-    } catch (e) {
-      print('Error fetching pets: $e');
-    }
-    yield pets;
   }
 
   @override
@@ -70,9 +35,13 @@ class _HomeState extends State<Home> {
         titleSpacing: 2.0,
       ),
       backgroundColor: const Color.fromARGB(255, 240, 224, 84),
-      body: StreamBuilder<List<Pet>>(
-        stream: getPetsStream(),
-        builder: (context, AsyncSnapshot<List<Pet>> snapshot) {
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection('petsInfo')
+            .doc(user)
+            .collection(widget.userModel.uEmail.toString())
+            .snapshots(),
+        builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.hasError) {
             return Text('Error: ${snapshot.error}');
           }
@@ -80,7 +49,7 @@ class _HomeState extends State<Home> {
             return const Center(child: CircularProgressIndicator());
           }
 
-          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
             return const Center(
               child: Text(
                 "No pets found.",
@@ -89,15 +58,13 @@ class _HomeState extends State<Home> {
             );
           }
 
-          List<Pet> pets = snapshot.data ?? [];
-
           return ListView.builder(
-            itemCount: pets.length,
+            itemCount: snapshot.data!.docs.length,
             itemBuilder: (BuildContext context, int index) {
-              return CustomCart().cartWidget(
-                pet: pets[index],
-                user: user,
-              );
+              Pet pet = Pet.fromMap(
+                  snapshot.data!.docs[index].data() as Map<String, dynamic>);
+              return CustomCart()
+                  .cartWidget(pet: pet, user: user); // Corrected usage
             },
           );
         },

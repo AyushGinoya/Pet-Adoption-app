@@ -145,114 +145,131 @@ class _ProfileState extends State<Profile> {
         centerTitle: true,
         backgroundColor: Colors.white,
       ),
-      backgroundColor: const Color.fromARGB(255, 240, 224, 84),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.only(top: 16.0, left: 8.0, right: 8.0),
-              child: Column(
-                children: [
-                  GestureDetector(
-                    onTap: showPhotoOptions,
-                    child: ValueListenableBuilder<bool>(
-                      valueListenable: isUploading,
-                      builder: (context, isUploading, child) {
-                        if (isUploading) {
-                          return const CircularProgressIndicator();
-                        } else {
-                          return CircleAvatar(
-                            radius: 50,
-                            backgroundImage: NetworkImage(
-                                widget.userModel.uProfile.toString()),
-                            backgroundColor: Colors.white,
-                          );
-                        }
-                      },
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  TextFormField(
-                    controller: _usernameController,
-                    decoration: InputDecoration(
-                      fillColor: Colors.white,
-                      filled: true,
-                      hintText: 'Username',
-                      prefixIcon: const Icon(Icons.person_outline),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
+      backgroundColor: Colors.transparent, // Make AppBar background transparent
+
+      body: Container(
+        width: double.infinity, // Ensure the container fills the screen width
+        height: double.infinity, // Ensure the container fills the screen height
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topRight,
+            end: Alignment.bottomLeft,
+            colors: [
+              Color.fromARGB(255, 240, 224, 84), // Original yellow
+              Color.fromARGB(255, 240, 200, 50), // Slightly darker yellow
+              Color.fromARGB(255, 245, 233, 77), // Lighter yellow
+            ],
+          ),
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Container(
+                padding:
+                    const EdgeInsets.only(top: 16.0, left: 8.0, right: 8.0),
+                child: Column(
+                  children: [
+                    GestureDetector(
+                      onTap: showPhotoOptions,
+                      child: ValueListenableBuilder<bool>(
+                        valueListenable: isUploading,
+                        builder: (context, isUploading, child) {
+                          if (isUploading) {
+                            return const CircularProgressIndicator();
+                          } else {
+                            return CircleAvatar(
+                              radius: 50,
+                              backgroundImage: NetworkImage(
+                                  widget.userModel.uProfile.toString()),
+                              backgroundColor: Colors.white,
+                            );
+                          }
+                        },
                       ),
                     ),
-                    enabled: _isEditing,
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  TextFormField(
-                    controller: _phoneController,
-                    keyboardType: TextInputType.phone,
-                    decoration: InputDecoration(
-                      fillColor: Colors.white,
-                      filled: true,
-                      hintText: 'Phone Number',
-                      prefixIcon: const Icon(Icons.phone),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
+                    const SizedBox(
+                      height: 20,
                     ),
-                    enabled: _isEditing,
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  TextFormField(
-                    controller: _emailController,
-                    keyboardType: TextInputType.emailAddress,
-                    decoration: InputDecoration(
-                      fillColor: Colors.white,
-                      filled: true,
-                      hintText: 'Email',
-                      prefixIcon: const Icon(Icons.mail_outline),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
+                    TextFormField(
+                      controller: _usernameController,
+                      decoration: InputDecoration(
+                        fillColor: Colors.white,
+                        filled: true,
+                        hintText: 'Username',
+                        prefixIcon: const Icon(Icons.person_outline),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
+                      enabled: _isEditing,
                     ),
-                    enabled: _isEditing,
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  TextFormField(
-                    controller: _addressController,
-                    decoration: InputDecoration(
-                      fillColor: Colors.white,
-                      filled: true,
-                      hintText: 'Address',
-                      prefixIcon: const Icon(Icons.location_city),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    TextFormField(
+                      controller: _phoneController,
+                      keyboardType: TextInputType.phone,
+                      decoration: InputDecoration(
+                        fillColor: Colors.white,
+                        filled: true,
+                        hintText: 'Phone Number',
+                        prefixIcon: const Icon(Icons.phone),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
+                      enabled: _isEditing,
                     ),
-                    enabled: _isEditing,
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  if (_isEditing)
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    TextFormField(
+                      controller: _emailController,
+                      keyboardType: TextInputType.emailAddress,
+                      decoration: InputDecoration(
+                        fillColor: Colors.white,
+                        filled: true,
+                        hintText: 'Email',
+                        prefixIcon: const Icon(Icons.mail_outline),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      enabled: _isEditing,
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    TextFormField(
+                      controller: _addressController,
+                      decoration: InputDecoration(
+                        fillColor: Colors.white,
+                        filled: true,
+                        hintText: 'Address',
+                        prefixIcon: const Icon(Icons.location_city),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      enabled: _isEditing,
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    if (_isEditing)
+                      ElevatedButton(
+                        onPressed: _saveUserInfo,
+                        child: const Text('Save'),
+                      ),
                     ElevatedButton(
-                      onPressed: _saveUserInfo,
-                      child: const Text('Save'),
+                      onPressed: _toggleEdit,
+                      child: Text(_isEditing ? 'Cancel' : 'Edit'),
                     ),
-                  ElevatedButton(
-                    onPressed: _toggleEdit,
-                    child: Text(_isEditing ? 'Cancel' : 'Edit'),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
