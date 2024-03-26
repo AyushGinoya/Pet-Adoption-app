@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
+import 'package:pet_adoption_app/helper/stripe_keys.dart';
 import 'package:pet_adoption_app/main.dart';
 import 'package:pet_adoption_app/models/chat_room_model.dart';
 import 'package:pet_adoption_app/models/message_model.dart';
@@ -20,12 +21,12 @@ class ChatRoomPage extends StatefulWidget {
   final User firebaseUser;
 
   const ChatRoomPage({
-    Key? key,
+    super.key,
     required this.targetUser,
     required this.chatroom,
     required this.userModel,
     required this.firebaseUser,
-  }) : super(key: key);
+  });
 
   @override
   _ChatRoomPageState createState() => _ChatRoomPageState();
@@ -68,23 +69,48 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
   }
 
   Future<void> makePayment() async {
-    try {
-      paymentIntentData = await createPaymentIntent('11111', 'USD');
-      await Stripe.instance.initPaymentSheet(
-        paymentSheetParameters: SetupPaymentSheetParameters(
-            customFlow: true,
-            paymentIntentClientSecret: paymentIntentData!['client_secret'],
-            style: ThemeMode.light,
-            merchantDisplayName: 'Ayush',
-            allowsDelayedPaymentMethods: true,
-            googlePay: const PaymentSheetGooglePay(
-                merchantCountryCode: "US", testEnv: true)),
-      );
-
-      displayPaymentSheet();
-    } catch (e) {
-      print("exception:" + e.toString());
-    }
+    final TextEditingController _amountController = TextEditingController();
+    // Show dialog to enter payment amount
+    await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Enter payment amount'),
+        content: TextField(
+          controller: _amountController,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          decoration: const InputDecoration(hintText: "Amount in INR"),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () async {
+              Navigator.of(context).pop();
+              try {
+                var amountInPaisa =
+                    (double.parse(_amountController.text)).toInt().toString();
+                paymentIntentData =
+                    await createPaymentIntent(amountInPaisa, 'INR');
+                await Stripe.instance.initPaymentSheet(
+                  paymentSheetParameters: SetupPaymentSheetParameters(
+                    customFlow: true,
+                    paymentIntentClientSecret:
+                        paymentIntentData!['client_secret'],
+                    style: ThemeMode.light,
+                    merchantDisplayName: 'Pets Adoption',
+                    allowsDelayedPaymentMethods: true,
+                    googlePay: const PaymentSheetGooglePay(
+                        merchantCountryCode: "IN", testEnv: true),
+                  ),
+                );
+                displayPaymentSheet();
+              } catch (e) {
+                print("exception: $e");
+              }
+            },
+            child: const Text('Confirm'),
+          ),
+        ],
+      ),
+    );
   }
 
   createPaymentIntent(String amount, String currency) async {
@@ -92,15 +118,13 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
       Map<String, dynamic> body = {
         'amount': amount,
         'currency': currency,
-        // 'payment_method_types[]': 'card',
       };
 
       var response = await http.post(
         Uri.parse('https://api.stripe.com/v1/payment_intents'),
         body: body,
         headers: {
-          'Authorization':
-              'Bearer sk_test_51Oy5H4SJzZrzkNTA73vB8wF1OQ3IV595Ee3OpxnXIZyimBr7DxZk7uQaEQFzK5izRqmlJNDnAc3iUHbmeb7OzeMI00g8DL28pP',
+          'Authorization': 'Bearer ${StripeKeys.secretKey}',
           'Content-Type': 'application/x-www-form-urlencoded'
         },
       );
@@ -113,46 +137,10 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
       }
     } catch (e) {
       print("exception:$e");
-      throw e; // Rethrow the exception to handle it in the calling method
     }
   }
 
-  // displayPaymentSheet() async {
-  //   try {
-  //     // Assuming paymentIntentData is correctly set up and contains the 'client_secret'
-  //     await Stripe.instance.presentPaymentSheet().then((newValue) {
-  //       print('Payment result: $newValue done');
-  //       if (newValue == true) {
-  //         // Assuming 'true' indicates a successful payment
-  //         ScaffoldMessenger.of(context).showSnackBar(
-  //             const SnackBar(content: Text("Payment successful")));
-  //       } else {
-  //         ScaffoldMessenger.of(context)
-  //             .showSnackBar(const SnackBar(content: Text("Payment failed")));
-  //       }
-  //     }).onError((error, stackTrace) {
-  //       print('Exception/DISPLAYPAYMENTSHEET==> $error $stackTrace');
-  //     });
-  //   } on StripeException catch (e) {
-  //     print('Exception/DISPLAYPAYMENTSHEET==> $e');
-  //     showDialog(
-  //         context: context,
-  //         builder: (_) => const AlertDialog(
-  //               content: Text("Payment failed"),
-  //             ));
-  //   } catch (e) {
-  //     print('$e');
-  //   }
-  // }
-
   displayPaymentSheet() async {
-    // try {
-    //   await Stripe.instance.presentPaymentSheet();
-    //   ScaffoldMessenger.of(context)
-    //       .showSnackBar(const SnackBar(content: Text("Payment successful")));
-    // } catch (e) {
-    //   print('Exp. - $e');
-    // }
     try {
       await Stripe.instance.presentPaymentSheet().then((value) {
         showDialog(

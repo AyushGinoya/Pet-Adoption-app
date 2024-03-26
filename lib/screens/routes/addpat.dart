@@ -58,42 +58,62 @@ class _AddPatState extends State<AddPat> {
             key: _formKey,
             child: Column(
               children: [
-                Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: 300,
-                  color: Colors.blueGrey,
-                  child: _img != null
-                      ? Image.file(
-                          _img!,
-                          fit: BoxFit.cover,
-                        )
-                      : null,
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                ElevatedButton(
-                  onPressed: () async {
-                    XFile? selectedImage = await ImagePicker()
-                        .pickImage(source: ImageSource.gallery);
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 24.0),
+                  child: GestureDetector(
+                    onTap: () async {
+                      // Updated to include image picking logic
+                      XFile? selectedImage = await ImagePicker()
+                          .pickImage(source: ImageSource.gallery);
 
-                    if (selectedImage != null) {
-                      File picFile = File(selectedImage.path);
-                      setState(() {
-                        _img = picFile;
-                      });
-                      log("Image selected!");
-                    } else {
-                      log("Image not selected");
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      side: const BorderSide(color: Colors.black),
+                      if (selectedImage != null) {
+                        setState(() {
+                          _img = File(selectedImage
+                              .path); // Make sure to declare `imageFile` of type `File?` at class level
+                        });
+                        log("Image selected!");
+                      } else {
+                        log("Image not selected");
+                      }
+                    },
+                    child: Container(
+                      height: 300,
+                      width: 340, // Adjusted height
+                      decoration: BoxDecoration(
+                        color: Color.fromARGB(255, 209, 207, 207),
+                        borderRadius: BorderRadius.circular(18),
+                      ),
+                      child: _img != null
+                          ? ClipRRect(
+                              borderRadius: BorderRadius.circular(17),
+                              child: Image.file(
+                                _img!,
+                                fit: BoxFit.cover,
+                                width: double.infinity,
+                                height: 300,
+                              ),
+                            )
+                          : const Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.add_a_photo,
+                                  color: Colors.grey,
+                                  size: 50,
+                                ),
+                                SizedBox(
+                                    height: 10), // Space between icon and text
+                                Text(
+                                  "Tap to select an image",
+                                  style: TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ],
+                            ),
                     ),
                   ),
-                  child: const Icon(Icons.add),
                 ),
                 TextFormField(
                   keyboardType: TextInputType.text,

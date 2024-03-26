@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:pet_adoption_app/helper/get_user_model.dart';
+import 'package:pet_adoption_app/helper/stripe_keys.dart';
 import 'package:pet_adoption_app/models/user_model.dart';
 import 'package:pet_adoption_app/screens/navigation_bar.dart';
 import 'package:pet_adoption_app/screens/routes/register.dart';
@@ -12,8 +13,7 @@ import 'package:flutter_stripe/flutter_stripe.dart';
 var uuid = const Uuid();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  Stripe.publishableKey =
-      'pk_test_51Oy5H4SJzZrzkNTAQhpJ46IerbhxHe29ENjr9eq85ZU8opHklW3TIBFd8zZwkmTpdYBrSeGcs8RD2xN0kGL17ild00pqH5WOfe';
+  Stripe.publishableKey = StripeKeys.publishableKey;
   await Stripe.instance.applySettings();
 
   await Firebase.initializeApp(
