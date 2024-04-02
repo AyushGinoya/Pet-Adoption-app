@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:pet_adoption_app/models/pet.dart';
+import 'package:pet_adoption_app/models/pet_model.dart';
 import 'package:pet_adoption_app/models/user_model.dart';
 import 'package:pet_adoption_app/helper/custom_card_layout.dart';
 
@@ -36,12 +36,8 @@ class _HomeState extends State<Home> {
       ),
       backgroundColor: const Color.fromARGB(255, 240, 224, 84),
       body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection('petsInfo')
-            .doc(user)
-            .collection(widget.userModel.uEmail.toString())
-            .snapshots(),
-        builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        stream: FirebaseFirestore.instance.collection('pets').snapshots(),
+        builder: (context, snapshot) {
           if (snapshot.hasError) {
             return Text('Error: ${snapshot.error}');
           }
@@ -64,7 +60,7 @@ class _HomeState extends State<Home> {
               Pet pet = Pet.fromMap(
                   snapshot.data!.docs[index].data() as Map<String, dynamic>);
               return CustomCart()
-                  .cartWidget(pet: pet, user: user); // Corrected usage
+                  .cartWidget(pet: pet); // Corrected usage
             },
           );
         },

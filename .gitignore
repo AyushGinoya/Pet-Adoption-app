@@ -45,3 +45,4 @@ app.*.map.json
 
 # Exclude Stripe keys
 /lib/helper/stripe_keys.dart
+/Diagram

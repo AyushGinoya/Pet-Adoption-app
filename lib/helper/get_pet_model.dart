@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:pet_adoption_app/models/pet.dart';
+import 'package:pet_adoption_app/models/pet_model.dart';
 
 class GetPetModel {
   static Future<Pet?> getPetModelById(String petId) async {

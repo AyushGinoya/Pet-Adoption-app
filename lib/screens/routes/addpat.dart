@@ -21,7 +21,7 @@ class AddPat extends StatefulWidget {
 class _AddPatState extends State<AddPat> {
   final _formKey = GlobalKey<FormState>();
 
-  String? id;
+  String? user;
 
   String _selectedGender = 'Male';
 
@@ -34,7 +34,7 @@ class _AddPatState extends State<AddPat> {
   void initState() {
     _img = null;
     super.initState();
-    id = widget.userModel.uName;
+    user = widget.userModel.uName.toString();
   }
 
   final TextEditingController _nameController = TextEditingController();
@@ -237,7 +237,7 @@ class _AddPatState extends State<AddPat> {
                         UploadTask uploadTask = FirebaseStorage.instance
                             .ref()
                             .child('patesImages')
-                            .child(id!)
+                            .child(user!)
                             .child(const Uuid().v1())
                             .putFile(_img!);
 
@@ -256,13 +256,10 @@ class _AddPatState extends State<AddPat> {
                             'subType': _subTypeController.text,
                             'height': int.parse(_heightController.text),
                             'imageUrl': imgUrl,
+                            'owner': user,
                           };
 
-                          await database
-                              .doc(id)
-                              .collection(widget.userModel.uEmail.toString())
-                              .doc(const Uuid().v4())
-                              .set(petData);
+                          await database.add(petData);
 
                           _nameController.clear();
                           _ageController.clear();

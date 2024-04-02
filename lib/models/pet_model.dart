@@ -6,6 +6,7 @@ class Pet {
   String? imageUrl;
   String? subType;
   String? type;
+  String? owner;
 
   Pet({
     this.name,
@@ -15,6 +16,7 @@ class Pet {
     this.imageUrl,
     this.subType,
     this.type,
+    this.owner,
   });
 
   // Construct Pet from a map (e.g., from Firebase)
@@ -26,6 +28,7 @@ class Pet {
     imageUrl = map['imageUrl'];
     subType = map['subType'];
     type = map['type'];
+    owner = map['owner'];
   }
 
   // Convert a Pet object to a map
@@ -38,6 +41,7 @@ class Pet {
       'imageUrl': imageUrl,
       'subType': subType,
       'type': type,
+      'owner': owner,
     };
   }
 }

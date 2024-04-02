@@ -1,9 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:pet_adoption_app/models/pet.dart';
+import 'package:pet_adoption_app/models/pet_model.dart';
 
 class CustomCart {
-  Widget cartWidget({required Pet pet, required String user}) {
+  Widget cartWidget({required Pet pet}) {
     Color atc = const Color(0xFF4CAF50);
 
     return Card(
@@ -24,7 +24,7 @@ class CustomCart {
             ),
             const SizedBox(height: 4),
             Text(
-              'Owner: $user',
+              'Owner: ${pet.owner}',
               style: const TextStyle(
                   fontFamily: 'AppFont', fontWeight: FontWeight.bold),
             ),

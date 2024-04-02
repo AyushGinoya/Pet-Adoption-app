@@ -6,6 +6,7 @@ import 'package:pet_adoption_app/models/user_model.dart';
 import 'package:pet_adoption_app/screens/routes/complete_register.dart';
 import 'package:pet_adoption_app/screens/routes/login.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:email_auth/email_auth.dart';
 
 class Register extends StatefulWidget {
   const Register({super.key});
@@ -19,9 +20,16 @@ class _RegisterState extends State<Register> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController cPasswordController = TextEditingController();
+  late EmailAuth auth;
   bool loading = false;
 
-  void checkValue() {
+  @override
+  void initState() {
+    super.initState();
+    auth = EmailAuth(sessionName: 'session');
+  }
+
+  void checkValue(BuildContext context) async {
     String userName = usernameController.text.trim();
     String email = emailController.text.trim();
     String pass = passwordController.text.trim();
@@ -42,6 +50,7 @@ class _RegisterState extends State<Register> {
         loading = false;
       });
     }
+    sendOTP();
 
     if (pass.isEmpty || pass.length < 6) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -58,7 +67,7 @@ class _RegisterState extends State<Register> {
         loading = false;
       });
     }
-    signUp(email, pass, userName);
+    showOTPDialog(context);
   }
 
   void signUp(String email, String pass, String uName) async {
@@ -102,6 +111,88 @@ class _RegisterState extends State<Register> {
         loading = false;
       });
     }
+  }
+
+  Future<void> sendOTP() async {
+    try {
+      bool result = await auth.sendOtp(
+          recipientMail: emailController.value.text, otpLength: 5);
+      if (result) {
+        // Optionally update the UI or notify the user that the OTP was sent
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("OTP sent to ${emailController.value.text}")),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Failed to send OTP")),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error sending OTP: $e")),
+      );
+    }
+  }
+
+  void showOTPDialog(BuildContext context) {
+    TextEditingController otpController = TextEditingController();
+
+    Future<void> verify() async {
+      try {
+        bool result = auth.validateOtp(
+            recipientMail: emailController.value.text,
+            userOtp: otpController.value.text);
+        if (result) {
+          Navigator.of(context).pop();
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("OTP Verified")),
+          );
+          String userName = usernameController.text.trim();
+          String email = emailController.text.trim();
+          String pass = passwordController.text.trim();
+
+          signUp(email, pass, userName);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Incorrect OTP")),
+          );
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Error verifying OTP: $e")),
+        );
+      }
+    }
+
+    showDialog(
+      context: context,
+      barrierDismissible: false, // User must tap button to close dialog
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Enter OTP'),
+          content: TextField(
+            controller: otpController,
+            keyboardType: TextInputType.number,
+            decoration: const InputDecoration(
+              hintText: 'OTP',
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                verify();
+              },
+              child: const Text('Verify'),
+            ),
+            TextButton(
+              onPressed: () =>
+                  Navigator.of(context).pop(), // Dismiss the dialog
+              child: const Text('Cancel'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -188,7 +279,7 @@ class _RegisterState extends State<Register> {
                         setState(() {
                           loading = !loading;
                         });
-                        checkValue();
+                        checkValue(context);
                       },
                       style: OutlinedButton.styleFrom(
                           backgroundColor: Colors.white,
