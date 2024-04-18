@@ -1,3 +1,4 @@
+import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -15,18 +16,22 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   Stripe.publishableKey = StripeKeys.publishableKey;
   await Stripe.instance.applySettings();
+  //await FirebaseAppCheck.instance.activate();
 
-  await Firebase.initializeApp(
-    options: const FirebaseOptions(
-      apiKey: 'AIzaSyCgOxtS5rgQExGpjCV4NeYmqfL08ZgM1vA',
-      authDomain: 'pet-adoption-app-a630e.firebaseapp.com',
-      projectId: 'pet-adoption-app-a630e',
-      appId: '1:220029605349:android:37a9d08e718b1508b3cb0c',
-      messagingSenderId: '220029605349',
-      storageBucket: "gs://pet-adoption-app-a630e.appspot.com",
-      databaseURL: "https://pet-adoption-app-a630e-default-rtdb.firebaseio.com",
-    ),
-  );
+  try {
+    await Firebase.initializeApp(
+      options: const FirebaseOptions(
+        apiKey: 'AIzaSyCgOxtS5rgQExGpjCV4NeYmqfL08ZgM1vA',
+        authDomain: 'pet-adoption-app-a630e.firebaseapp.com',
+        projectId: 'pet-adoption-app-a630e',
+        appId: '1:220029605349:android:37a9d08e718b1508b3cb0c',
+        messagingSenderId: '220029605349',
+        storageBucket: "gs://pet-adoption-app-a630e.appspot.com",
+      ),
+    );
+  } catch (e) {
+    print("Error initializing Firebase: $e");
+  }
 
   User? user = FirebaseAuth.instance.currentUser;
   if (user == null) {

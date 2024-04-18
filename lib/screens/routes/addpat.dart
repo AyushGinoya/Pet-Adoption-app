@@ -80,7 +80,7 @@ class _AddPatState extends State<AddPat> {
                       height: 300,
                       width: 340, // Adjusted height
                       decoration: BoxDecoration(
-                        color: Color.fromARGB(255, 209, 207, 207),
+                        color: const Color.fromARGB(255, 209, 207, 207),
                         borderRadius: BorderRadius.circular(18),
                       ),
                       child: _img != null

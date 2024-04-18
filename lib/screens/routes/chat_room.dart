@@ -131,7 +131,9 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
 
       if (response.statusCode == 200) {
         //print('Create Intent response ===> ${response.body.toString()}');
-        return json.decode(response.body);
+        Map<String, dynamic> paymentData = json.decode(response.body);
+        await storePaymentData(paymentData);
+        return paymentData;
       } else {
         throw Exception('Failed to create payment intent');
       }
@@ -184,6 +186,23 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
       );
     } catch (e) {
       print('$e');
+    }
+  }
+
+  Future<void> storePaymentData(Map<String, dynamic> paymentData) async {
+    try {
+      Map<String, dynamic> mainInfo = {
+        'username': widget.userModel.uName.toString(),
+        'status': paymentData['status'],
+        'amount': paymentData['amount'],
+        'currency': paymentData['currency'],
+        'id': paymentData['id'],
+        'payment_method_types': paymentData['payment_method_types'],
+      };
+      await FirebaseFirestore.instance.collection('payments').add(mainInfo);
+      print('Payment data stored successfully');
+    } catch (e) {
+      print('Failed to store payment data: $e');
     }
   }
 

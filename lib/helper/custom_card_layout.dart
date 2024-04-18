@@ -58,19 +58,7 @@ class CustomCart {
               'Gender: ${pet.gender}',
               style: const TextStyle(fontFamily: 'AppFont'),
             ),
-            const SizedBox(height: 8),
-            Center(
-              child: ElevatedButton(
-                onPressed: () {},
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all<Color>(atc),
-                ),
-                child: const Text(
-                  'Connect',
-                  style: TextStyle(fontFamily: 'AppFont', color: Colors.white),
-                ),
-              ),
-            ),
+            const SizedBox(height: 48),
           ],
         ),
       ),
