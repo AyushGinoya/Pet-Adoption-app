@@ -7,6 +7,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pet_adoption_app/models/user_model.dart';
+import 'package:pet_adoption_app/screens/routes/login.dart';
 
 class Profile extends StatefulWidget {
   final UserModel userModel;
@@ -143,7 +144,21 @@ class _ProfileState extends State<Profile> {
           style: TextStyle(fontFamily: 'AppFont', fontSize: 30),
         ),
         centerTitle: true,
+        automaticallyImplyLeading: false,
         backgroundColor: Colors.white,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () async {
+              await FirebaseAuth.instance.signOut();
+              Navigator.popUntil(context, (route) => route.isFirst);
+              Navigator.pushReplacement(context,
+                  MaterialPageRoute(builder: (context) {
+                return const Login();
+              }));
+            },
+          ),
+        ],
       ),
       backgroundColor: Colors.transparent, // Make AppBar background transparent
 

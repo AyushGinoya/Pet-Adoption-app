@@ -63,36 +63,45 @@ class _ChatsState extends State<Chats> {
                             UserModel targetUser = userData.data as UserModel;
                             print("Target user name: ${targetUser.uName}");
 
-                            return ListTile(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(builder: (context) {
-                                    return ChatRoomPage(
-                                      chatroom: chatRoomModel,
-                                      firebaseUser: widget.firebaseUser,
-                                      userModel: widget.userModel,
-                                      targetUser: targetUser,
+                            return Column(
+                              children: [
+                                ListTile(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context) {
+                                        return ChatRoomPage(
+                                          chatroom: chatRoomModel,
+                                          firebaseUser: widget.firebaseUser,
+                                          userModel: widget.userModel,
+                                          targetUser: targetUser,
+                                        );
+                                      }),
                                     );
-                                  }),
-                                );
-                              },
-                              leading: CircleAvatar(
-                                backgroundImage: NetworkImage(
-                                    targetUser.uProfile.toString()),
-                              ),
-                              title: Text(targetUser.uName.toString()),
-                              subtitle: (chatRoomModel.lastMessage.toString() !=
-                                      "")
-                                  ? Text(chatRoomModel.lastMessage.toString())
-                                  : Text(
-                                      "Say hi to your new friend!",
-                                      style: TextStyle(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .secondary,
-                                      ),
-                                    ),
+                                  },
+                                  leading: CircleAvatar(
+                                    backgroundImage: NetworkImage(
+                                        targetUser.uProfile.toString()),
+                                  ),
+                                  title: Text(targetUser.uName.toString()),
+                                  subtitle: (chatRoomModel.lastMessage
+                                              .toString() !=
+                                          "")
+                                      ? Text(
+                                          chatRoomModel.lastMessage.toString())
+                                      : Text(
+                                          "Say hi to your new friend!",
+                                          style: TextStyle(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .secondary,
+                                          ),
+                                        ),
+                                ),
+                                const Divider(
+                                  thickness: 1.2,
+                                ),
+                              ],
                             );
                           } else {
                             print("No data returned from FutureBuilder");

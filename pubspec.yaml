@@ -50,6 +50,13 @@ dependencies:
   stripe_ios: ^10.1.0
   email_auth: ^1.1.1
   email_otp: ^2.1.2
+  flutter_native_splash: ^2.4.0
+
+flutter_native_splash:
+  android: true
+  ios: true
+  color: "#FFFFFF"
+  image: assets/images/splash_screen.png
 
 dev_dependencies:
   flutter_test:
@@ -74,7 +81,10 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   # assets:
-  #   - assets/images
+  #   - assets/
+
+  assets:
+    - assets/images/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

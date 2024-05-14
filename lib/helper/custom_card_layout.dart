@@ -4,7 +4,6 @@ import 'package:pet_adoption_app/models/pet_model.dart';
 
 class CustomCart {
   Widget cartWidget({required Pet pet}) {
-    Color atc = const Color(0xFF4CAF50);
 
     return Card(
       elevation: 4.0,

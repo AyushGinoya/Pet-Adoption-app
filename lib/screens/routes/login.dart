@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:pet_adoption_app/models/user_model.dart';
 import 'package:pet_adoption_app/screens/navigation_bar.dart';
+import 'package:pet_adoption_app/screens/routes/register.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -62,10 +63,10 @@ class _LoginState extends State<Login> {
         setState(() {
           loading = false;
         });
-      }else{
+      } else {
         print("User document does not exist.");
       }
-        } on FirebaseAuthException catch (e) {
+    } on FirebaseAuthException catch (e) {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(e.message ?? "Login Failed")));
       Navigator.pop(context);
@@ -162,6 +163,21 @@ class _LoginState extends State<Login> {
                   const SizedBox(
                     height: 20,
                   ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const Register()));
+                    },
+                    child: const Text(
+                      'Register here',
+                      style: TextStyle(
+                          fontFamily: 'AppFont',
+                          color: Colors.black,
+                          fontSize: 15),
+                    ),
+                  )
                 ],
               ),
             ),

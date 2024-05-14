@@ -14,6 +14,15 @@ class NavigationIconController extends GetxController {
   final Rx<int> selectIndex = 0.obs;
   UserModel? userModel1;
   RxList<Widget> screens = RxList<Widget>([]);
+ 
+
+  var currentScreen = 'home'.obs; // Current screen name
+  var isNavigationBarVisible = true.obs; // Add this property
+
+  void updateCurrentScreen(String screenName) {
+    currentScreen.value = screenName;
+  }
+
 
   @override
   void onInit() {

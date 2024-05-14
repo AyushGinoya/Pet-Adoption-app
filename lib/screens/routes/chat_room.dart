@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_print
+// ignore_for_file: avoid_print, deprecated_member_use
 
 import 'dart:convert';
 import 'dart:developer';
@@ -208,119 +208,129 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 240, 224, 84),
-        title: Row(
-          children: [
-            CircleAvatar(
-              backgroundColor: Colors.white,
-              backgroundImage:
-                  NetworkImage(widget.targetUser.uProfile.toString()),
-            ),
-            const SizedBox(width: 15),
-            Text(widget.targetUser.uName.toString()),
-          ],
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.of(context).pop();
+        return true;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: const Color.fromARGB(255, 240, 224, 84),
+          title: Row(
+            children: [
+              CircleAvatar(
+                backgroundColor: Colors.white,
+                backgroundImage:
+                    NetworkImage(widget.targetUser.uProfile.toString()),
+              ),
+              const SizedBox(width: 15),
+              Text(widget.targetUser.uName.toString()),
+            ],
+          ),
         ),
-      ),
-      body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: StreamBuilder(
-                  stream: FirebaseFirestore.instance
-                      .collection("chatrooms")
-                      .doc(widget.chatroom.chatRoomID)
-                      .collection("messages")
-                      .orderBy("createdOn", descending: true)
-                      .snapshots(),
-                  builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                    if (snapshot.connectionState == ConnectionState.active) {
-                      if (snapshot.hasData) {
-                        return ListView.builder(
-                          reverse: true,
-                          itemCount: snapshot.data!.docs.length,
-                          itemBuilder: (context, index) {
-                            MessageModel currentMessage = MessageModel.fromMap(
-                              snapshot.data!.docs[index].data()
-                                  as Map<String, dynamic>,
-                            );
-                            return Row(
-                              mainAxisAlignment: currentMessage.sender ==
-                                      widget.userModel.uName
-                                  ? MainAxisAlignment.end
-                                  : MainAxisAlignment.start,
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 10, horizontal: 10),
-                                  margin:
-                                      const EdgeInsets.symmetric(vertical: 2),
-                                  decoration: BoxDecoration(
-                                    color: currentMessage.sender ==
-                                            widget.userModel.uName
-                                        ? Colors.blue[200]
-                                        : const Color.fromARGB(
-                                            255, 100, 97, 97),
-                                    borderRadius: BorderRadius.circular(12),
+        body: SafeArea(
+          child: Column(
+            children: [
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: StreamBuilder(
+                    stream: FirebaseFirestore.instance
+                        .collection("chatrooms")
+                        .doc(widget.chatroom.chatRoomID)
+                        .collection("messages")
+                        .orderBy("createdOn", descending: true)
+                        .snapshots(),
+                    builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                      if (snapshot.connectionState == ConnectionState.active) {
+                        if (snapshot.hasData) {
+                          return ListView.builder(
+                            reverse: true,
+                            itemCount: snapshot.data!.docs.length,
+                            itemBuilder: (context, index) {
+                              MessageModel currentMessage =
+                                  MessageModel.fromMap(
+                                snapshot.data!.docs[index].data()
+                                    as Map<String, dynamic>,
+                              );
+                              return Row(
+                                mainAxisAlignment: currentMessage.sender ==
+                                        widget.userModel.uName
+                                    ? MainAxisAlignment.end
+                                    : MainAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 10, horizontal: 10),
+                                    margin:
+                                        const EdgeInsets.symmetric(vertical: 2),
+                                    decoration: BoxDecoration(
+                                      color: currentMessage.sender ==
+                                              widget.userModel.uName
+                                          ? Colors.blue[200]
+                                          : const Color.fromARGB(
+                                              255, 100, 97, 97),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Text(
+                                      currentMessage.text.toString(),
+                                      style:
+                                          const TextStyle(color: Colors.white),
+                                    ),
                                   ),
-                                  child: Text(
-                                    currentMessage.text.toString(),
-                                    style: const TextStyle(color: Colors.white),
-                                  ),
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                      } else if (snapshot.hasError) {
-                        return const Center(
-                          child: Text(
-                              "Error occurred, please check your internet connection."),
-                        );
+                                ],
+                              );
+                            },
+                          );
+                        } else if (snapshot.hasError) {
+                          return const Center(
+                            child: Text(
+                                "Error occurred, please check your internet connection."),
+                          );
+                        } else {
+                          return const Center(
+                            child: Text("Say hi to the owner of the pet."),
+                          );
+                        }
                       } else {
                         return const Center(
-                          child: Text("Say hi to the owner of the pet."),
+                          child: CircularProgressIndicator(),
                         );
                       }
-                    } else {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    }
-                  },
+                    },
+                  ),
                 ),
               ),
-            ),
-            Container(
-              color: Colors.grey[200],
-              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-              child: Row(
-                children: [
-                  Flexible(
-                    child: TextField(
-                      controller: messageController,
-                      decoration: const InputDecoration(
-                          border: InputBorder.none, hintText: "Enter message"),
+              Container(
+                color: Colors.grey[200],
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                child: Row(
+                  children: [
+                    Flexible(
+                      child: TextField(
+                        controller: messageController,
+                        decoration: const InputDecoration(
+                            border: InputBorder.none,
+                            hintText: "Enter message"),
+                      ),
                     ),
-                  ),
-                  TextButton(
-                    onPressed: () async {
-                      await makePayment();
-                    },
-                    child: const Text('Pay'),
-                  ),
-                  IconButton(
-                    onPressed: sendMessage,
-                    icon: const Icon(Icons.send,
-                        color: Color.fromARGB(255, 240, 224, 84)),
-                  ),
-                ],
+                    TextButton(
+                      onPressed: () async {
+                        await makePayment();
+                      },
+                      child: const Text('Pay'),
+                    ),
+                    IconButton(
+                      onPressed: sendMessage,
+                      icon: const Icon(Icons.send,
+                          color: Color.fromARGB(255, 240, 224, 84)),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

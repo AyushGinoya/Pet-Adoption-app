@@ -1,3 +1,7 @@
+// ignore_for_file: avoid_print
+
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -27,6 +31,38 @@ class _HomeState extends State<Home> {
     user = widget.userModel.uName.toString();
   }
 
+  bool _onWillPop(BuildContext context) {
+    bool? exitResult = showDialog(
+      context: context,
+      builder: (context) => _buildExitDialog(context),
+    ) as bool?;
+    return exitResult ?? false;
+  }
+
+  Future<bool?> _showExitDialog(BuildContext context) async {
+    return await showDialog(
+      context: context,
+      builder: (context) => _buildExitDialog(context),
+    );
+  }
+
+  AlertDialog _buildExitDialog(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Please confirm'),
+      content: const Text('Do you want to exit the app?'),
+      actions: <Widget>[
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(false),
+          child: const Text('No'),
+        ),
+        TextButton(
+          onPressed: () => exit(0),
+          child: const Text('Yes'),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,6 +73,7 @@ class _HomeState extends State<Home> {
         ),
         centerTitle: true,
         titleSpacing: 2.0,
+        automaticallyImplyLeading: false,
       ),
       backgroundColor: const Color.fromARGB(255, 240, 224, 84),
       body: StreamBuilder<QuerySnapshot>(

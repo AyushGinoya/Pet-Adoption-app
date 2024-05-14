@@ -214,6 +214,8 @@ class _CompleteRegisterState extends State<CompleteRegister> {
                       : const Text('Sign Up'),
                 ),
               ],
-            )));
+            )
+          )
+        );
   }
 }

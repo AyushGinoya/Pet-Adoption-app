@@ -65,7 +65,7 @@ class _AddPatState extends State<AddPat> {
                       // Updated to include image picking logic
                       XFile? selectedImage = await ImagePicker()
                           .pickImage(source: ImageSource.gallery);
-
+    
                       if (selectedImage != null) {
                         setState(() {
                           _img = File(selectedImage
@@ -102,7 +102,8 @@ class _AddPatState extends State<AddPat> {
                                   size: 50,
                                 ),
                                 SizedBox(
-                                    height: 10), // Space between icon and text
+                                    height:
+                                        10), // Space between icon and text
                                 Text(
                                   "Tap to select an image",
                                   style: TextStyle(
@@ -240,13 +241,13 @@ class _AddPatState extends State<AddPat> {
                             .child(user!)
                             .child(const Uuid().v1())
                             .putFile(_img!);
-
+    
                         TaskSnapshot snapshot = await uploadTask;
-
+    
                         if (snapshot.state == TaskState.success) {
                           imgUrl = await snapshot.ref.getDownloadURL();
                         }
-
+    
                         if (_formKey.currentState!.validate()) {
                           Map<String, dynamic> petData = {
                             'name': _nameController.text,
@@ -258,9 +259,9 @@ class _AddPatState extends State<AddPat> {
                             'imageUrl': imgUrl,
                             'owner': user,
                           };
-
+    
                           await database.add(petData);
-
+    
                           _nameController.clear();
                           _ageController.clear();
                           _genderController.clear();
@@ -291,7 +292,7 @@ class _AddPatState extends State<AddPat> {
                               Colors.black,
                             ),
                           )
-                        : const Text('Add to App'),
+                        : const Text('Add pet'),
                   ),
                 ),
               ],
