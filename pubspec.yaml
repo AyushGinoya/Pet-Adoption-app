@@ -50,13 +50,14 @@ dependencies:
   stripe_ios: ^10.1.0
   email_auth: ^1.1.1
   email_otp: ^2.1.2
-  flutter_native_splash: ^2.4.0
+  flutter_launcher_icons: ^0.13.1
+#   flutter_native_splash: ^2.4.0
 
-flutter_native_splash:
-  android: true
-  ios: true
-  color: "#FFFFFF"
-  image: assets/images/splash_screen.png
+# flutter_native_splash:
+#   android: true
+#   ios: true
+#   color: "#FFFFFF"
+#   image: assets/images/splash_screen.png
 
 dev_dependencies:
   flutter_test:

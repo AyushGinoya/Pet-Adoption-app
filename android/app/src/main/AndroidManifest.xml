@@ -1,8 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
-        android:label="pet_adoption_app"
+        android:label="Pet Adoption App"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/splash_screen">
         <activity
             android:enableOnBackInvokedCallback="false"
             android:name=".MainActivity"
@@ -18,7 +18,7 @@
                  to determine the Window background behind the Flutter UI. -->
             <meta-data
                 android:name="io.flutter.embedding.android.NormalTheme"
-                android:resource="@drawable/splash_screen"
+                android:resource="@mipmap/splash_screen"
             />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
