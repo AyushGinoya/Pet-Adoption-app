@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_print
+// ignore_for_file: avoid_print, use_build_context_synchronously
 
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -21,6 +21,7 @@ class Profile extends StatefulWidget {
 class _ProfileState extends State<Profile> {
   File? imageFile;
   bool _isEditing = false;
+  bool _isLoading = false;
   ValueNotifier<bool> isUploading = ValueNotifier<bool>(false);
 
   final TextEditingController _addressController = TextEditingController();
@@ -132,6 +133,50 @@ class _ProfileState extends State<Profile> {
       print("Failed to update profile picture: $e");
     } finally {
       isUploading.value = false;
+    }
+  }
+
+  Future<void> deleteAccount(BuildContext context) async {
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+
+      String uid = widget.firebaseUser.uid;
+
+      // Delete user's added pets
+      QuerySnapshot petSnapshot = await FirebaseFirestore.instance
+          .collection('petsInfo')
+          .where('owner', isEqualTo: widget.userModel.uName)
+          .get();
+
+      for (QueryDocumentSnapshot doc in petSnapshot.docs) {
+        await doc.reference.delete();
+      }
+
+      // Delete user data from Firestore
+      await FirebaseFirestore.instance.collection('users').doc(uid).delete();
+
+      // Delete user from Firebase Authentication
+      await widget.firebaseUser.delete();
+
+      await FirebaseAuth.instance.signOut();
+      Navigator.popUntil(context, (route) => route.isFirst);
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+        return const Login();
+      }));
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Account deleted successfully")),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Failed to delete account: $e")),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -279,6 +324,19 @@ class _ProfileState extends State<Profile> {
                     ElevatedButton(
                       onPressed: _toggleEdit,
                       child: Text(_isEditing ? 'Cancel' : 'Edit'),
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: () {
+                        deleteAccount(context);
+                      },
+                      // style: ElevatedButton.styleFrom(
+                      //   backgroundColor: Colors.red, // Background color
+                      // ),
+                      child: const Text(
+                        'Delete Account',
+                        style: TextStyle(color: Colors.red),
+                      ),
                     ),
                   ],
                 ),

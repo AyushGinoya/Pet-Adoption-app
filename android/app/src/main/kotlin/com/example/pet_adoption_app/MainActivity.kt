@@ -1,4 +1,4 @@
-package com.example.pet_adoption_app
+package com.ayushddu.pet_adoption_app
 
 import io.flutter.embedding.android.FlutterFragmentActivity
 
