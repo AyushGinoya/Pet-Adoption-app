@@ -11,6 +11,7 @@ import 'package:pet_adoption_app/screens/routes/login.dart';
 import 'package:pet_adoption_app/screens/settings/delete_account_policy.dart';
 import 'package:pet_adoption_app/screens/settings/privacy_policy.dart';
 import 'package:pet_adoption_app/screens/settings/update_profile.dart';
+import 'package:pet_adoption_app/screens/settings/user_pets.dart';
 
 class Profile extends StatefulWidget {
   final UserModel userModel;
@@ -221,6 +222,7 @@ class _ProfileState extends State<Profile> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Color(0xFF2196F3),
         title: const Text(
           'Settings',
           style: TextStyle(fontFamily: 'AppFont', fontSize: 30),
@@ -353,7 +355,10 @@ class _ProfileState extends State<Profile> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const DeleteAccountPolicy(),
+                          builder: (context) => UserPetsPage(
+                            userModel: widget.userModel,
+                            firebaseUser: widget.firebaseUser,
+                          ),
                         ),
                       );
                     },

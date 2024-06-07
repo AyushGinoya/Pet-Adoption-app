@@ -47,8 +47,19 @@ class _AddPatState extends State<AddPat> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Color(0xFF2196F3),
+        title: const Text(
+          'Add Pet',
+          style: TextStyle(fontFamily: 'AppFont', fontSize: 30),
+        ),
+        centerTitle: true,
+        titleSpacing: 2.0,
+        automaticallyImplyLeading: false,
+      ),
       body: SingleChildScrollView(
         child: Container(
+          color: const Color(0xFFE6E6FA),
           padding: EdgeInsets.only(
             top: MediaQuery.of(context).size.height * 0.1,
             left: 15,
@@ -65,7 +76,7 @@ class _AddPatState extends State<AddPat> {
                       // Updated to include image picking logic
                       XFile? selectedImage = await ImagePicker()
                           .pickImage(source: ImageSource.gallery);
-    
+
                       if (selectedImage != null) {
                         setState(() {
                           _img = File(selectedImage
@@ -102,8 +113,7 @@ class _AddPatState extends State<AddPat> {
                                   size: 50,
                                 ),
                                 SizedBox(
-                                    height:
-                                        10), // Space between icon and text
+                                    height: 10), // Space between icon and text
                                 Text(
                                   "Tap to select an image",
                                   style: TextStyle(
@@ -116,26 +126,32 @@ class _AddPatState extends State<AddPat> {
                     ),
                   ),
                 ),
-                TextFormField(
-                  keyboardType: TextInputType.text,
-                  controller: _nameController,
-                  decoration: InputDecoration(
-                    hintText: 'Enter name',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                Container(
+                  color: Colors.white,
+                  child: TextFormField(
+                    keyboardType: TextInputType.text,
+                    controller: _nameController,
+                    decoration: const InputDecoration(
+                      hintText: 'Enter name',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.zero,
+                      ),
                     ),
                   ),
                 ),
                 const SizedBox(
                   height: 20,
                 ),
-                TextFormField(
-                  controller: _ageController,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    hintText: 'Enter age',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                Container(
+                  color: Colors.white,
+                  child: TextFormField(
+                    controller: _ageController,
+                    keyboardType: TextInputType.number,
+                    decoration: const InputDecoration(
+                      hintText: 'Enter age',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.zero,
+                      ),
                     ),
                   ),
                 ),
@@ -145,86 +161,102 @@ class _AddPatState extends State<AddPat> {
                 const ListTile(
                   title: Text('Gender'),
                 ),
-                RadioListTile<String>(
-                  title: const Text('Male'),
-                  value: 'Male',
-                  activeColor: const Color.fromARGB(255, 240, 224, 84),
-                  groupValue: _selectedGender,
-                  onChanged: (String? value) {
-                    setState(() {
-                      _selectedGender = value!;
-                    });
-                  },
-                ),
-                RadioListTile<String>(
-                  title: const Text('Female'),
-                  value: 'Female',
-                  activeColor: const Color.fromARGB(255, 240, 224, 84),
-                  groupValue: _selectedGender,
-                  onChanged: (String? value) {
-                    setState(() {
-                      _selectedGender = value!;
-                    });
-                  },
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                TextFormField(
-                  controller: _typeController,
-                  decoration: InputDecoration(
-                    hintText: 'Enter type',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
+                Container(
+                  color: Colors.white,
+                  child: RadioListTile<String>(
+                    title: const Text('Male'),
+                    value: 'Male',
+                    activeColor: Color.fromARGB(255, 141, 73, 129),
+                    groupValue: _selectedGender,
+                    onChanged: (String? value) {
+                      setState(() {
+                        _selectedGender = value!;
+                      });
+                    },
                   ),
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return "Enter type";
-                    }
-                    return null;
-                  },
+                ),
+                Container(
+                  color: Colors.white,
+                  child: RadioListTile<String>(
+                    title: const Text('Female'),
+                    value: 'Female',
+                    activeColor: Color.fromARGB(255, 141, 73, 129),
+                    groupValue: _selectedGender,
+                    onChanged: (String? value) {
+                      setState(() {
+                        _selectedGender = value!;
+                      });
+                    },
+                  ),
                 ),
                 const SizedBox(
                   height: 20,
                 ),
-                TextFormField(
-                  controller: _subTypeController,
-                  decoration: InputDecoration(
-                      hintText: 'Enter Sub type',
+                Container(
+                  color: Colors.white,
+                  child: TextFormField(
+                    controller: _typeController,
+                    decoration: const InputDecoration(
+                      hintText: 'Enter type',
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      )),
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return "Enter sub type";
-                    }
-                    return null;
-                  },
+                        borderRadius: BorderRadius.zero,
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return "Enter type";
+                      }
+                      return null;
+                    },
+                  ),
                 ),
                 const SizedBox(
                   height: 20,
                 ),
-                TextFormField(
-                  controller: _heightController,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    hintText: 'Enter height(in cm)',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
+                Container(
+                  color: Colors.white,
+                  child: TextFormField(
+                    controller: _subTypeController,
+                    decoration: const InputDecoration(
+                        hintText: 'Enter Sub type',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.zero,
+                        )),
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return "Enter sub type";
+                      }
+                      return null;
+                    },
                   ),
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Enter height';
-                    }
-                    return null;
-                  },
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                Container(
+                  color: Colors.white,
+                  child: TextFormField(
+                    controller: _heightController,
+                    keyboardType: TextInputType.number,
+                    decoration: const InputDecoration(
+                      hintText: 'Enter height(in cm)',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.zero,
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Enter height';
+                      }
+                      return null;
+                    },
+                  ),
                 ),
                 const SizedBox(
                   height: 20,
                 ),
                 SizedBox(
+                  height: 40,
                   child: ElevatedButton(
                     onPressed: () async {
                       if (_img == null) {
@@ -241,13 +273,13 @@ class _AddPatState extends State<AddPat> {
                             .child(user!)
                             .child(const Uuid().v1())
                             .putFile(_img!);
-    
+
                         TaskSnapshot snapshot = await uploadTask;
-    
+
                         if (snapshot.state == TaskState.success) {
                           imgUrl = await snapshot.ref.getDownloadURL();
                         }
-    
+
                         if (_formKey.currentState!.validate()) {
                           Map<String, dynamic> petData = {
                             'name': _nameController.text,
@@ -259,9 +291,9 @@ class _AddPatState extends State<AddPat> {
                             'imageUrl': imgUrl,
                             'owner': user,
                           };
-    
+
                           await database.add(petData);
-    
+
                           _nameController.clear();
                           _ageController.clear();
                           _genderController.clear();

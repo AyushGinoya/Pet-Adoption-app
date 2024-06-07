@@ -67,6 +67,7 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Color(0xFF2196F3),
         title: const Text(
           '🐶Home😸',
           style: TextStyle(fontFamily: 'AppFont', fontSize: 30),
@@ -75,7 +76,7 @@ class _HomeState extends State<Home> {
         titleSpacing: 2.0,
         automaticallyImplyLeading: false,
       ),
-      backgroundColor: const Color.fromARGB(255, 240, 224, 84),
+      backgroundColor: const Color(0xFFE6E6FA),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance.collection('petsInfo').snapshots(),
         builder: (context, snapshot) {

@@ -26,110 +26,165 @@ class _ChatsState extends State<Chats> {
         automaticallyImplyLeading: false,
         title: const Text('Adoption Inquiry'),
         centerTitle: true,
-        backgroundColor: const Color.fromARGB(255, 240, 224, 84),
+        backgroundColor: const Color(0xFF2196F3),
       ),
       body: SafeArea(
-        child: StreamBuilder(
-          stream: FirebaseFirestore.instance
-              .collection("chatrooms")
-              .where("participants.${widget.userModel.uName}", isEqualTo: true)
-              .snapshots(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.active) {
-              if (snapshot.hasData) {
-                QuerySnapshot chatRoomSnapshot = snapshot.data as QuerySnapshot;
-                print("Fetched chat rooms: ${chatRoomSnapshot.docs.length}");
+        child: Container(
+          color: const Color(0xFFE6E6FA),
+          child: StreamBuilder(
+            stream: FirebaseFirestore.instance
+                .collection("chatrooms")
+                .where("participants.${widget.userModel.uName}",
+                    isEqualTo: true)
+                .snapshots(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.active) {
+                if (snapshot.hasData) {
+                  QuerySnapshot chatRoomSnapshot =
+                      snapshot.data as QuerySnapshot;
+                  print("Fetched chat rooms: ${chatRoomSnapshot.docs.length}");
 
-                return ListView.builder(
-                  itemCount: chatRoomSnapshot.docs.length,
-                  itemBuilder: (context, index) {
-                    ChatRoomModel chatRoomModel = ChatRoomModel.fromMap(
-                        chatRoomSnapshot.docs[index].data()
-                            as Map<String, dynamic>);
+                  return ListView.builder(
+                    itemCount: chatRoomSnapshot.docs.length,
+                    itemBuilder: (context, index) {
+                      ChatRoomModel chatRoomModel = ChatRoomModel.fromMap(
+                          chatRoomSnapshot.docs[index].data()
+                              as Map<String, dynamic>);
 
-                    Map<String, dynamic> participants =
-                        chatRoomModel.participants!;
+                      Map<String, dynamic> participants =
+                          chatRoomModel.participants!;
 
-                    List<String> participantKeys = participants.keys.toList();
-                    participantKeys.remove(widget.userModel.uName);
-                    print(participantKeys);
+                      List<String> participantKeys = participants.keys.toList();
+                      participantKeys.remove(widget.userModel.uName);
+                      print(participantKeys);
 
-                    return FutureBuilder(
-                      future:
-                          GetUserModel.getUserModelByName(participantKeys[0]),
-                      builder: (context, userData) {
-                        if (userData.connectionState == ConnectionState.done) {
-                          if (userData.data != null) {
-                            UserModel targetUser = userData.data as UserModel;
-                            print("Target user name: ${targetUser.uName}");
+                      return FutureBuilder(
+                        future:
+                            GetUserModel.getUserModelByName(participantKeys[0]),
+                        builder: (context, userData) {
+                          if (userData.connectionState ==
+                              ConnectionState.done) {
+                            if (userData.data != null) {
+                              UserModel targetUser = userData.data as UserModel;
+                              print("Target user name: ${targetUser.uName}");
 
-                            return Column(
-                              children: [
-                                ListTile(
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(builder: (context) {
-                                        return ChatRoomPage(
-                                          chatroom: chatRoomModel,
-                                          firebaseUser: widget.firebaseUser,
-                                          userModel: widget.userModel,
-                                          targetUser: targetUser,
-                                        );
-                                      }),
-                                    );
-                                  },
-                                  leading: CircleAvatar(
-                                    backgroundImage: NetworkImage(
-                                        targetUser.uProfile.toString()),
-                                  ),
-                                  title: Text(targetUser.uName.toString()),
-                                  subtitle: (chatRoomModel.lastMessage
-                                              .toString() !=
-                                          "")
-                                      ? Text(
-                                          chatRoomModel.lastMessage.toString())
-                                      : Text(
-                                          "Say hi to your new friend!",
-                                          style: TextStyle(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .secondary,
+                              return Column(
+                                children: [
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(builder: (context) {
+                                          return ChatRoomPage(
+                                            chatroom: chatRoomModel,
+                                            firebaseUser: widget.firebaseUser,
+                                            userModel: widget.userModel,
+                                            targetUser: targetUser,
+                                          );
+                                        }),
+                                      );
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      padding: const EdgeInsets.all(0),
+                                      backgroundColor: Colors.white,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                    ),
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 16, vertical: 12),
+                                      child: Row(
+                                        children: [
+                                          Container(
+                                            width: 40,
+                                            height: 40,
+                                            decoration: BoxDecoration(
+                                              color: Colors.lightBlue,
+                                              shape: BoxShape.circle,
+                                              image: DecorationImage(
+                                                image: NetworkImage(targetUser
+                                                    .uProfile
+                                                    .toString()),
+                                                fit: BoxFit.cover,
+                                              ),
+                                            ),
                                           ),
-                                        ),
-                                ),
-                                const Divider(
-                                  thickness: 1.2,
-                                ),
-                              ],
-                            );
+                                          const SizedBox(width: 16),
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  targetUser.uName.toString(),
+                                                  style: const TextStyle(
+                                                    color: Colors.black,
+                                                    fontFamily: 'AppFont',
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 4),
+                                                Text(
+                                                  (chatRoomModel.lastMessage
+                                                              .toString() !=
+                                                          "")
+                                                      ? chatRoomModel
+                                                          .lastMessage
+                                                          .toString()
+                                                      : "Say hi to your new friend!",
+                                                  style: TextStyle(
+                                                    color: (chatRoomModel
+                                                                .lastMessage
+                                                                .toString() !=
+                                                            "")
+                                                        ? Colors.grey
+                                                        : Theme.of(context)
+                                                            .colorScheme
+                                                            .secondary,
+                                                    fontFamily: 'AppFont',
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  const Divider(
+                                    thickness: 1,
+                                  ),
+                                ],
+                              );
+                            } else {
+                              print("No data returned from FutureBuilder");
+                              return Container();
+                            }
                           } else {
-                            print("No data returned from FutureBuilder");
+                            print("FutureBuilder not completed");
                             return Container();
                           }
-                        } else {
-                          print("FutureBuilder not completed");
-                          return Container();
-                        }
-                      },
-                    );
-                  },
-                );
-              } else if (snapshot.hasError) {
-                return Center(
-                  child: Text(snapshot.error.toString()),
-                );
+                        },
+                      );
+                    },
+                  );
+                } else if (snapshot.hasError) {
+                  return Center(
+                    child: Text(snapshot.error.toString()),
+                  );
+                } else {
+                  return const Center(
+                    child: Text("No chats found. Start a conversation!"),
+                  );
+                }
               } else {
                 return const Center(
-                  child: Text("No chats found. Start a conversation!"),
+                  child: CircularProgressIndicator(),
                 );
               }
-            } else {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-          },
+            },
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton(

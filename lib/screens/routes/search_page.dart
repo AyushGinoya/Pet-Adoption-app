@@ -5,7 +5,6 @@ import 'package:pet_adoption_app/helper/get_chatroom_model.dart';
 import 'package:pet_adoption_app/models/chat_room_model.dart';
 import 'package:pet_adoption_app/models/user_model.dart';
 import 'package:pet_adoption_app/screens/routes/chat_room.dart';
-import 'package:pet_adoption_app/screens/routes/chats.dart';
 
 class SearchPage extends StatefulWidget {
   final UserModel userModel;
