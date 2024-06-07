@@ -76,8 +76,8 @@ class _NavigationMenuState extends State<NavigationMenu> {
                   label: 'Chats',
                 ),
                 NavigationDestination(
-                  icon: Icon(Icons.account_box_sharp),
-                  label: 'Profile',
+                  icon: Icon(Icons.settings),
+                  label: 'Settings',
                 ),
               ]),
         ),
