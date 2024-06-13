@@ -5,12 +5,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:pet_adoption_app/models/user_model.dart';
 import 'package:uuid/uuid.dart';
 
 class AddPat extends StatefulWidget {
   final UserModel userModel;
   final User firebaseUser;
+
   const AddPat(
       {super.key, required this.userModel, required this.firebaseUser});
 
@@ -22,7 +24,6 @@ class _AddPatState extends State<AddPat> {
   final _formKey = GlobalKey<FormState>();
 
   String? user;
-
   String _selectedGender = 'Male';
 
   final database = FirebaseFirestore.instance.collection("petsInfo");
@@ -44,14 +45,72 @@ class _AddPatState extends State<AddPat> {
   final TextEditingController _heightController = TextEditingController();
   final TextEditingController _subTypeController = TextEditingController();
 
+  Future<void> selectImage(ImageSource source) async {
+    final XFile? selectedImage = await ImagePicker().pickImage(source: source);
+
+    if (selectedImage != null) {
+      final CroppedFile? croppedImage = await ImageCropper().cropImage(
+        sourcePath: selectedImage.path,
+        aspectRatioPresets: [
+          CropAspectRatioPreset.square,
+          CropAspectRatioPreset.ratio3x2,
+          CropAspectRatioPreset.original,
+          CropAspectRatioPreset.ratio4x3,
+          CropAspectRatioPreset.ratio16x9,
+        ],
+      );
+
+      if (croppedImage != null) {
+        setState(() {
+          _img = File(croppedImage.path);
+        });
+        log("Image selected and cropped!");
+      } else {
+        log("Image cropping canceled");
+      }
+    } else {
+      log("Image not selected");
+    }
+  }
+
+  void showPhotoOptions() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Select Image Source"),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              onTap: () {
+                Navigator.pop(context);
+                selectImage(ImageSource.gallery);
+              },
+              leading: const Icon(Icons.photo_album),
+              title: const Text("Select from Gallery"),
+            ),
+            ListTile(
+              onTap: () {
+                Navigator.pop(context);
+                selectImage(ImageSource.camera);
+              },
+              leading: const Icon(Icons.camera_alt),
+              title: const Text("Take a Photo"),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xFF2196F3),
+        backgroundColor: const Color(0xFF2196F3),
         title: const Text(
           'Add Pet',
-          style: TextStyle(fontFamily: 'AppFont', fontSize: 30),
+          style: TextStyle(fontFamily: 'AppFont', fontSize: 24),
         ),
         centerTitle: true,
         titleSpacing: 2.0,
@@ -60,8 +119,8 @@ class _AddPatState extends State<AddPat> {
       body: SingleChildScrollView(
         child: Container(
           color: const Color(0xFFE6E6FA),
-          padding: EdgeInsets.only(
-            top: MediaQuery.of(context).size.height * 0.1,
+          padding: const EdgeInsets.only(
+            top: 16,
             left: 15,
             right: 15,
           ),
@@ -72,24 +131,10 @@ class _AddPatState extends State<AddPat> {
                 Padding(
                   padding: const EdgeInsets.only(bottom: 24.0),
                   child: GestureDetector(
-                    onTap: () async {
-                      // Updated to include image picking logic
-                      XFile? selectedImage = await ImagePicker()
-                          .pickImage(source: ImageSource.gallery);
-
-                      if (selectedImage != null) {
-                        setState(() {
-                          _img = File(selectedImage
-                              .path); // Make sure to declare `imageFile` of type `File?` at class level
-                        });
-                        log("Image selected!");
-                      } else {
-                        log("Image not selected");
-                      }
-                    },
+                    onTap: showPhotoOptions,
                     child: Container(
                       height: 300,
-                      width: 340, // Adjusted height
+                      width: 340,
                       decoration: BoxDecoration(
                         color: const Color.fromARGB(255, 209, 207, 207),
                         borderRadius: BorderRadius.circular(18),
@@ -112,8 +157,7 @@ class _AddPatState extends State<AddPat> {
                                   color: Colors.grey,
                                   size: 50,
                                 ),
-                                SizedBox(
-                                    height: 10), // Space between icon and text
+                                SizedBox(height: 10),
                                 Text(
                                   "Tap to select an image",
                                   style: TextStyle(
@@ -139,9 +183,7 @@ class _AddPatState extends State<AddPat> {
                     ),
                   ),
                 ),
-                const SizedBox(
-                  height: 20,
-                ),
+                const SizedBox(height: 20),
                 Container(
                   color: Colors.white,
                   child: TextFormField(
@@ -155,9 +197,7 @@ class _AddPatState extends State<AddPat> {
                     ),
                   ),
                 ),
-                const SizedBox(
-                  height: 20,
-                ),
+                const SizedBox(height: 20),
                 const ListTile(
                   title: Text('Gender'),
                 ),
@@ -166,7 +206,7 @@ class _AddPatState extends State<AddPat> {
                   child: RadioListTile<String>(
                     title: const Text('Male'),
                     value: 'Male',
-                    activeColor: Color.fromARGB(255, 141, 73, 129),
+                    activeColor: const Color.fromARGB(255, 141, 73, 129),
                     groupValue: _selectedGender,
                     onChanged: (String? value) {
                       setState(() {
@@ -180,7 +220,7 @@ class _AddPatState extends State<AddPat> {
                   child: RadioListTile<String>(
                     title: const Text('Female'),
                     value: 'Female',
-                    activeColor: Color.fromARGB(255, 141, 73, 129),
+                    activeColor: const Color.fromARGB(255, 141, 73, 129),
                     groupValue: _selectedGender,
                     onChanged: (String? value) {
                       setState(() {
@@ -189,9 +229,7 @@ class _AddPatState extends State<AddPat> {
                     },
                   ),
                 ),
-                const SizedBox(
-                  height: 20,
-                ),
+                const SizedBox(height: 20),
                 Container(
                   color: Colors.white,
                   child: TextFormField(
@@ -210,9 +248,7 @@ class _AddPatState extends State<AddPat> {
                     },
                   ),
                 ),
-                const SizedBox(
-                  height: 20,
-                ),
+                const SizedBox(height: 20),
                 Container(
                   color: Colors.white,
                   child: TextFormField(
@@ -230,9 +266,7 @@ class _AddPatState extends State<AddPat> {
                     },
                   ),
                 ),
-                const SizedBox(
-                  height: 20,
-                ),
+                const SizedBox(height: 20),
                 Container(
                   color: Colors.white,
                   child: TextFormField(
@@ -252,9 +286,7 @@ class _AddPatState extends State<AddPat> {
                     },
                   ),
                 ),
-                const SizedBox(
-                  height: 20,
-                ),
+                const SizedBox(height: 20),
                 SizedBox(
                   height: 40,
                   child: ElevatedButton(
@@ -269,7 +301,7 @@ class _AddPatState extends State<AddPat> {
                         });
                         UploadTask uploadTask = FirebaseStorage.instance
                             .ref()
-                            .child('patesImages')
+                            .child('petsImages')
                             .child(user!)
                             .child(const Uuid().v1())
                             .putFile(_img!);

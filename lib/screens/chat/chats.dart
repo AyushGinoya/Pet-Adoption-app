@@ -6,8 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:pet_adoption_app/helper/get_user_model.dart';
 import 'package:pet_adoption_app/models/chat_room_model.dart';
 import 'package:pet_adoption_app/models/user_model.dart';
-import 'package:pet_adoption_app/screens/routes/chat_room.dart';
-import 'package:pet_adoption_app/screens/routes/search_page.dart';
+import 'package:pet_adoption_app/screens/chat/chat_room.dart';
+import 'package:pet_adoption_app/screens/chat/search_page.dart';
 
 class Chats extends StatefulWidget {
   final UserModel userModel;
@@ -24,7 +24,10 @@ class _ChatsState extends State<Chats> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: const Text('Adoption Inquiry'),
+        title: const Text(
+          'Adoption Inquiry',
+          style: TextStyle(fontFamily: 'AppFont', fontSize: 24),
+        ),
         centerTitle: true,
         backgroundColor: const Color(0xFF2196F3),
       ),
@@ -43,6 +46,19 @@ class _ChatsState extends State<Chats> {
                   QuerySnapshot chatRoomSnapshot =
                       snapshot.data as QuerySnapshot;
                   print("Fetched chat rooms: ${chatRoomSnapshot.docs.length}");
+
+                  if (chatRoomSnapshot.docs.isEmpty) {
+                    return const Center(
+                      child: Text(
+                        "No chats found!!",
+                        style: TextStyle(
+                          color: Color.fromARGB(255, 134, 132, 132),
+                          fontSize: 16,
+                          fontFamily: 'AppFont',
+                        ),
+                      ),
+                    );
+                  }
 
                   return ListView.builder(
                     itemCount: chatRoomSnapshot.docs.length,
@@ -175,7 +191,10 @@ class _ChatsState extends State<Chats> {
                   );
                 } else {
                   return const Center(
-                    child: Text("No chats found. Start a conversation!"),
+                    child: Text(
+                      "No chats found. Start a conversation!",
+                      style: TextStyle(fontFamily: 'MyFont', fontSize: 10),
+                    ),
                   );
                 }
               } else {

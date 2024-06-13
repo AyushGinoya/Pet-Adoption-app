@@ -46,3 +46,5 @@ app.*.map.json
 # Exclude Stripe keys
 /lib/helper/stripe_keys.dart
 /Diagram
+android\build.gradle
+android\app\build.gradle

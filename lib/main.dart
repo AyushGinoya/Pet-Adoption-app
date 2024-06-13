@@ -7,7 +7,7 @@ import 'package:pet_adoption_app/helper/get_user_model.dart';
 import 'package:pet_adoption_app/helper/stripe_keys.dart';
 import 'package:pet_adoption_app/models/user_model.dart';
 import 'package:pet_adoption_app/screens/navigation_bar.dart';
-import 'package:pet_adoption_app/screens/routes/register.dart';
+import 'package:pet_adoption_app/screens/Register/register.dart';
 import 'package:uuid/uuid.dart';
 
 import 'package:flutter_stripe/flutter_stripe.dart';

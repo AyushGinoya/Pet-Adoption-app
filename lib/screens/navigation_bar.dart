@@ -1,8 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_instance/get_instance.dart';
-import 'package:get/get_state_manager/get_state_manager.dart';
+import 'package:get/get.dart';
 import 'package:pet_adoption_app/helper/navigation_icon_controller.dart';
 import 'package:pet_adoption_app/models/user_model.dart';
 
@@ -53,39 +51,69 @@ class _NavigationMenuState extends State<NavigationMenu> {
         }
       },
       child: Scaffold(
+        backgroundColor: const Color.fromARGB(255, 223, 30, 30),
         bottomNavigationBar: Obx(
-          () => NavigationBar(
-              elevation: 0,
-              height: 80,
-              indicatorColor: const Color.fromARGB(255, 240, 224, 84),
-              selectedIndex: controller.selectIndex.value,
-              onDestinationSelected: (index) {
+          () => Container(
+            color: const Color.fromARGB(255, 223, 30,
+                30), // Background color for the bottom navigation bar
+            child: BottomNavigationBar(
+              currentIndex: controller.selectIndex.value,
+              onTap: (index) {
                 controller.selectIndex.value = index;
               },
-              destinations: const [
-                NavigationDestination(
-                  icon: Icon(Icons.home),
+              items: [
+                _buildBottomNavigationBarItem(
+                  icon: Icons.home,
                   label: 'Home',
+                  isSelected: controller.selectIndex.value == 0,
                 ),
-                NavigationDestination(
-                  icon: Icon(Icons.add),
+                _buildBottomNavigationBarItem(
+                  icon: Icons.add_box,
                   label: 'Add',
+                  isSelected: controller.selectIndex.value == 1,
                 ),
-                NavigationDestination(
-                  icon: Icon(Icons.chat_sharp),
+                _buildBottomNavigationBarItem(
+                  icon: Icons.chat,
                   label: 'Chats',
+                  isSelected: controller.selectIndex.value == 2,
                 ),
-                NavigationDestination(
-                  icon: Icon(Icons.settings),
+                _buildBottomNavigationBarItem(
+                  icon: Icons.settings,
                   label: 'Settings',
+                  isSelected: controller.selectIndex.value == 3,
                 ),
-              ]),
+              ],
+              selectedItemColor: Colors.blue,
+              unselectedItemColor: Colors.grey,
+              backgroundColor: const Color.fromARGB(255, 223, 30, 30),
+            ),
+          ),
         ),
-        // Display the selected screen
         body: Obx(() => controller.screens.isNotEmpty
             ? controller.screens[controller.selectIndex.value]
             : const CircularProgressIndicator()),
       ),
+    );
+  }
+
+  BottomNavigationBarItem _buildBottomNavigationBarItem({
+    required IconData icon,
+    required String label,
+    required bool isSelected,
+  }) {
+    return BottomNavigationBarItem(
+      icon: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: isSelected ? Colors.blue.withOpacity(0.2) : Colors.transparent,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Icon(
+          icon,
+          color: isSelected ? Colors.blue : Colors.grey,
+        ),
+      ),
+      label: label,
     );
   }
 }

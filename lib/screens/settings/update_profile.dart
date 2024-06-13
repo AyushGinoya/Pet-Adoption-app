@@ -71,7 +71,7 @@ class _UpdateProfileState extends State<UpdateProfile> {
         centerTitle: true,
       ),
       body: Container(
-        color: const Color.fromARGB(255, 226, 226, 225),
+        color: const Color(0xFFE6E6FA),
         height: MediaQuery.of(context).size.height,
         child: SingleChildScrollView(
           child: Padding(

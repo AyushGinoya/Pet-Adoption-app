@@ -11,7 +11,7 @@ import 'package:pet_adoption_app/models/chat_room_model.dart';
 import 'package:pet_adoption_app/models/pet_model.dart';
 import 'package:pet_adoption_app/models/user_model.dart';
 import 'package:pet_adoption_app/helper/custom_card_layout.dart';
-import 'package:pet_adoption_app/screens/routes/chat_room.dart';
+import 'package:pet_adoption_app/screens/chat/chat_room.dart';
 
 class Home extends StatefulWidget {
   final UserModel userModel;
@@ -70,7 +70,7 @@ class _HomeState extends State<Home> {
         backgroundColor: Color(0xFF2196F3),
         title: const Text(
           '🐶Home😸',
-          style: TextStyle(fontFamily: 'AppFont', fontSize: 30),
+          style: TextStyle(fontFamily: 'AppFont', fontSize: 24),
         ),
         centerTitle: true,
         titleSpacing: 2.0,

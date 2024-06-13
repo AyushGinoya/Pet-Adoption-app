@@ -13,7 +13,7 @@ class DeleteAccountPolicy extends StatelessWidget {
       body: Stack(
         children: [
           Container(
-            color: const Color.fromARGB(255, 226, 226, 225),
+            color: const Color(0xFFE6E6FA),
           ),
           Container(
             color:

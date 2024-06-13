@@ -4,13 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:pet_adoption_app/helper/get_chatroom_model.dart';
 import 'package:pet_adoption_app/models/chat_room_model.dart';
 import 'package:pet_adoption_app/models/user_model.dart';
-import 'package:pet_adoption_app/screens/routes/chat_room.dart';
+import 'package:pet_adoption_app/screens/chat/chat_room.dart';
 
 class SearchPage extends StatefulWidget {
   final UserModel userModel;
   final User user;
 
-  const SearchPage({super.key, required this.userModel, required this.user});
+  const SearchPage({Key? key, required this.userModel, required this.user})
+      : super(key: key);
 
   @override
   State<SearchPage> createState() => _SearchPageState();
@@ -27,9 +28,13 @@ class _SearchPageState extends State<SearchPage> {
         return true;
       },
       child: Scaffold(
-        backgroundColor: const Color.fromARGB(255, 240, 224, 84),
+        backgroundColor: const Color(0xFFE6E6FA),
         appBar: AppBar(
-          title: const Text("Search"),
+          title: const Text(
+            "Search",
+            style: TextStyle(color: Colors.black),
+          ),
+          backgroundColor: const Color(0xFF2196F3),
         ),
         body: SafeArea(
           child: Column(
@@ -53,7 +58,7 @@ class _SearchPageState extends State<SearchPage> {
               ),
               const SizedBox(height: 20),
               SizedBox(
-                width: 140,
+                width: 90,
                 child: ElevatedButton(
                   onPressed: () => setState(() {}),
                   style: ElevatedButton.styleFrom(
@@ -62,11 +67,16 @@ class _SearchPageState extends State<SearchPage> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: const Text('Search',
-                      style: TextStyle(color: Colors.black)),
+                  child: const Text(
+                    'Search',
+                    style: TextStyle(color: Colors.black),
+                  ),
                 ),
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 10),
+              const Divider(
+                color: Color.fromARGB(255, 8, 8, 8),
+              ),
               Expanded(
                 child: StreamBuilder(
                   stream: FirebaseFirestore.instance
@@ -86,34 +96,50 @@ class _SearchPageState extends State<SearchPage> {
                         return const Text("No results found");
                       }
                       QuerySnapshot querySnapshot = snapshot.data!;
-                      Map<String, dynamic> userMap = querySnapshot.docs.first
-                          .data() as Map<String, dynamic>;
-                      UserModel searchModel = UserModel.fromMap(userMap);
+                      return ListView.builder(
+                        itemCount: querySnapshot.docs.length,
+                        itemBuilder: (context, index) {
+                          Map<String, dynamic> userMap =
+                              querySnapshot.docs[index].data()
+                                  as Map<String, dynamic>;
+                          UserModel searchModel = UserModel.fromMap(userMap);
 
-                      return ListTile(
-                        onTap: () async {
-                          ChatRoomModel? chatRoomModel =
-                              await GetChatRoom.getChatRoomModel(
-                                  searchModel, widget.userModel);
-                          if (chatRoomModel != null) {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => ChatRoomPage(
+                          return Column(
+                            children: [
+                              ListTile(
+                                onTap: () async {
+                                  ChatRoomModel? chatRoomModel =
+                                      await GetChatRoom.getChatRoomModel(
+                                          searchModel, widget.userModel);
+                                  if (chatRoomModel != null) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => ChatRoomPage(
                                           targetUser: searchModel,
                                           userModel: widget.userModel,
                                           firebaseUser: widget.user,
                                           chatroom: chatRoomModel,
-                                        )));
-                          }
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                },
+                                leading: CircleAvatar(
+                                  backgroundImage:
+                                      NetworkImage(searchModel.uProfile ?? ''),
+                                ),
+                                title: Text(searchModel.uName ?? ''),
+                                subtitle: Text(searchModel.uEmail ?? ''),
+                                trailing:
+                                    const Icon(Icons.keyboard_arrow_right),
+                              ),
+                              const Divider(
+                                color: Color.fromARGB(255, 8, 8, 8),
+                              ),
+                            ],
+                          );
                         },
-                        leading: CircleAvatar(
-                          backgroundImage:
-                              NetworkImage(searchModel.uProfile ?? ''),
-                        ),
-                        title: Text(searchModel.uName ?? ''),
-                        subtitle: Text(searchModel.uEmail ?? ''),
-                        trailing: const Icon(Icons.keyboard_arrow_right),
                       );
                     } else {
                       return const Text("No data");

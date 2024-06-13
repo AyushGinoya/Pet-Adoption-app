@@ -1,5 +1,3 @@
-// ignore_for_file: avoid_print, use_build_context_synchronously
-
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -7,7 +5,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pet_adoption_app/models/user_model.dart';
-import 'package:pet_adoption_app/screens/routes/login.dart';
+import 'package:pet_adoption_app/screens/login/login.dart';
 import 'package:pet_adoption_app/screens/settings/delete_account_policy.dart';
 import 'package:pet_adoption_app/screens/settings/privacy_policy.dart';
 import 'package:pet_adoption_app/screens/settings/update_profile.dart';
@@ -27,6 +25,17 @@ class _ProfileState extends State<Profile> {
   bool _isEditing = false;
   bool _isLoading = false;
   ValueNotifier<bool> isUploading = ValueNotifier<bool>(false);
+  String? userName;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchUserName();
+  }
+
+  Future<void> fetchUserName() async {
+    userName = widget.userModel.uName.toString();
+  }
 
   Widget buildButton({
     required VoidCallback onPressed,
@@ -65,12 +74,6 @@ class _ProfileState extends State<Profile> {
     );
   }
 
-  void _toggleEdit() {
-    setState(() {
-      _isEditing = !_isEditing;
-    });
-  }
-
   Future<void> selectImage(ImageSource source) async {
     final ImagePicker picker = ImagePicker();
     final XFile? pickedFile = await picker.pickImage(source: source);
@@ -84,31 +87,32 @@ class _ProfileState extends State<Profile> {
 
   void showPhotoOptions() {
     showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-              title: const Text("Upload Profile Picture"),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  ListTile(
-                    onTap: () {
-                      Navigator.pop(context);
-                      selectImage(ImageSource.gallery);
-                    },
-                    leading: const Icon(Icons.photo_album),
-                    title: const Text("Select from Gallery"),
-                  ),
-                  ListTile(
-                    onTap: () {
-                      Navigator.pop(context);
-                      selectImage(ImageSource.camera);
-                    },
-                    leading: const Icon(Icons.camera_alt),
-                    title: const Text("Take a Photo"),
-                  )
-                ],
-              ),
-            ));
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Upload Profile Picture"),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              onTap: () {
+                Navigator.pop(context);
+                selectImage(ImageSource.gallery);
+              },
+              leading: const Icon(Icons.photo_album),
+              title: const Text("Select from Gallery"),
+            ),
+            ListTile(
+              onTap: () {
+                Navigator.pop(context);
+                selectImage(ImageSource.camera);
+              },
+              leading: const Icon(Icons.camera_alt),
+              title: const Text("Take a Photo"),
+            )
+          ],
+        ),
+      ),
+    );
   }
 
   Future<void> updateProfilePic(File imageFile) async {
@@ -222,21 +226,20 @@ class _ProfileState extends State<Profile> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xFF2196F3),
+        backgroundColor: const Color(0xFF2196F3),
         title: const Text(
           'Settings',
-          style: TextStyle(fontFamily: 'AppFont', fontSize: 30),
+          style: TextStyle(fontFamily: 'AppFont', fontSize: 24),
         ),
         centerTitle: true,
         automaticallyImplyLeading: false,
       ),
-      backgroundColor: Colors.transparent, // Make AppBar background transparent
-
+      backgroundColor: Colors.transparent,
       body: Container(
-          color: const Color.fromARGB(255, 226, 226, 225),
-          height: MediaQuery.of(context).size.height,
-          child: SingleChildScrollView(
-              child: Column(
+        color: const Color(0xFFE6E6FA),
+        height: MediaQuery.of(context).size.height,
+        child: SingleChildScrollView(
+          child: Column(
             children: [
               Column(
                 children: [
@@ -257,7 +260,6 @@ class _ProfileState extends State<Profile> {
                             Color.fromRGBO(107, 170, 120, 1),
                             Color.fromRGBO(201, 164, 177, 1),
                           ],
-                          // stops: [0.20, 0.55, 1.0],
                         ),
                       ),
                       child: Center(
@@ -266,43 +268,56 @@ class _ProfileState extends State<Profile> {
                             valueListenable: isUploading,
                             builder: (context, isUploading, child) {
                               if (isUploading) {
-                                return const CircularProgressIndicator(); // Show loading indicator if uploading
+                                return const CircularProgressIndicator();
                               } else {
-                                return Stack(
-                                  alignment: Alignment.center,
+                                return Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    CircleAvatar(
-                                      radius: 50,
-                                      backgroundImage: NetworkImage(
-                                          widget.userModel.uProfile.toString()),
-                                      backgroundColor: Colors.white,
-                                    ),
-                                    Positioned(
-                                        right:
-                                            0, // Position the icon 10 pixels from the right edge
-                                        bottom:
-                                            3, // Position the icon 10 pixels from the bottom edge
-                                        child: Center(
-                                          child: Container(
-                                            width: 30.0,
-                                            height: 30.0,
-                                            decoration: const BoxDecoration(
-                                              shape: BoxShape.circle,
-                                              color: Colors
-                                                  .blue, // This is the background color of the circle
-                                            ),
-                                            child: Center(
-                                              child: IconButton(
-                                                icon: const Icon(Icons.edit,
-                                                    size: 16.0),
-                                                color: Colors.white,
-                                                onPressed: () {
-                                                  showPhotoOptions();
-                                                },
+                                    Stack(
+                                      alignment: Alignment.center,
+                                      children: [
+                                        CircleAvatar(
+                                          radius: 50,
+                                          backgroundImage: NetworkImage(widget
+                                              .userModel.uProfile
+                                              .toString()),
+                                          backgroundColor: Colors.white,
+                                        ),
+                                        Positioned(
+                                          right: 0,
+                                          bottom: 3,
+                                          child: Center(
+                                            child: Container(
+                                              width: 30.0,
+                                              height: 30.0,
+                                              decoration: const BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                color: Colors.blue,
+                                              ),
+                                              child: Center(
+                                                child: IconButton(
+                                                  icon: const Icon(Icons.edit,
+                                                      size: 16.0),
+                                                  color: Colors.white,
+                                                  onPressed: () {
+                                                    showPhotoOptions();
+                                                  },
+                                                ),
                                               ),
                                             ),
                                           ),
-                                        )),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      userName ?? '',
+                                      style: const TextStyle(
+                                        fontFamily: 'AppFont',
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
                                   ],
                                 );
                               }
@@ -312,27 +327,20 @@ class _ProfileState extends State<Profile> {
                       ),
                     ),
                   ),
-                  const SizedBox(
-                    height: 40,
-                  ),
+                  const SizedBox(height: 40),
                   const Center(
                     child: Text(
                       'Account',
                       style: TextStyle(
-                          fontFamily: 'AppFont',
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold),
+                        fontFamily: 'AppFont',
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                  const SizedBox(
-                    height: 4,
-                  ),
-                  const Divider(
-                    height: 1,
-                  ),
-                  const SizedBox(
-                    height: 4,
-                  ),
+                  const SizedBox(height: 4),
+                  const Divider(height: 1),
+                  const SizedBox(height: 4),
                   const SizedBox(height: 10),
                   buildButton(
                     onPressed: () {
@@ -385,20 +393,15 @@ class _ProfileState extends State<Profile> {
                     child: Text(
                       'Application',
                       style: TextStyle(
-                          fontFamily: 'AppFont',
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold),
+                        fontFamily: 'AppFont',
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                  const SizedBox(
-                    height: 4,
-                  ),
-                  const Divider(
-                    height: 1,
-                  ),
-                  const SizedBox(
-                    height: 4,
-                  ),
+                  const SizedBox(height: 4),
+                  const Divider(height: 1),
+                  const SizedBox(height: 4),
                   const SizedBox(height: 10),
                   buildButton(
                     onPressed: () {
@@ -438,7 +441,9 @@ class _ProfileState extends State<Profile> {
                 ],
               ),
             ],
-          ))),
+          ),
+        ),
+      ),
     );
   }
 }

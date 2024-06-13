@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:pet_adoption_app/models/user_model.dart';
 import 'package:pet_adoption_app/screens/navigation_bar.dart';
-import 'package:pet_adoption_app/screens/routes/register.dart';
+import 'package:pet_adoption_app/screens/Register/register.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -80,7 +80,7 @@ class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 240, 224, 84),
+      backgroundColor: const Color(0xFFE6E6FA),
       body: SingleChildScrollView(
         child: Column(
           children: [

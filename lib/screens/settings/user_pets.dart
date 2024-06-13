@@ -23,7 +23,7 @@ class UserPetsPage extends StatelessWidget {
         centerTitle: true,
         titleSpacing: 2.0,
       ),
-      backgroundColor: Color.fromARGB(255, 125, 61, 105),
+      backgroundColor: const Color(0xFFE6E6FA),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance.collection('petsInfo').snapshots(),
         builder: (context, snapshot) {

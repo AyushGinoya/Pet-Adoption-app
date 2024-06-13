@@ -1,14 +1,11 @@
-// ignore_for_file: avoid_print, use_build_context_synchronously
-
-import 'dart:developer';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:email_otp/email_otp.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pet_adoption_app/models/user_model.dart';
-import 'package:pet_adoption_app/screens/routes/complete_register.dart';
-import 'package:pet_adoption_app/screens/routes/login.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:email_otp/email_otp.dart';
+import 'package:pet_adoption_app/screens/Register/complete_register.dart';
+import 'package:pet_adoption_app/screens/Register/verify_otp.dart';
+import 'package:pet_adoption_app/screens/login/login.dart';
 
 class Register extends StatefulWidget {
   const Register({super.key});
@@ -31,7 +28,7 @@ class _RegisterState extends State<Register> {
     super.initState();
   }
 
-  void checkValue(BuildContext context) async {
+  Future<void> checkValue(BuildContext context) async {
     String userName = usernameController.text.trim();
     String email = emailController.text.trim();
     String pass = passwordController.text.trim();
@@ -43,6 +40,7 @@ class _RegisterState extends State<Register> {
       setState(() {
         loading = false;
       });
+      return;
     }
 
     if (email.isEmpty || !email.contains('@')) {
@@ -51,6 +49,7 @@ class _RegisterState extends State<Register> {
       setState(() {
         loading = false;
       });
+      return;
     }
 
     if (pass.isEmpty || pass.length < 6) {
@@ -59,6 +58,7 @@ class _RegisterState extends State<Register> {
       setState(() {
         loading = false;
       });
+      return;
     }
 
     if (pass != cPass) {
@@ -67,7 +67,9 @@ class _RegisterState extends State<Register> {
       setState(() {
         loading = false;
       });
+      return;
     }
+
     myAuth.setConfig(
       appEmail: "petadoptionapp@gmail.com",
       appName: "Pet Adoption App",
@@ -75,36 +77,30 @@ class _RegisterState extends State<Register> {
       otpLength: 6,
       otpType: OTPType.digitsOnly,
     );
-    await myAuth.sendOTP();
-    print('otp send');
-    showOTPDialog(context);
-  }
 
-  Future<void> verifyOtp(String otp) async {
-    bool isValid = await myAuth.verifyOTP(otp: otp);
-    if (isValid) {
-      print('OTP is valid');
-      signUp(emailController.text, passwordController.text,
-          usernameController.text);
-    } else {
-      print('OTP is invalid');
+    bool otpSent = await myAuth.sendOTP();
+    if (otpSent) {
+      print('OTP sent');
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("OTP is Invalid")),
+        const SnackBar(content: Text("OTP sent")),
       );
+      signUp(email, pass, userName);
+    } else {
+      print('Failed to send OTP');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Failed to send OTP")),
+      );
+      setState(() {
+        loading = false;
+      });
     }
   }
 
-  void signUp(String email, String pass, String uName) async {
-    UserCredential? credential;
-
+  Future<void> signUp(String email, String pass, String uName) async {
     try {
-      credential = await FirebaseAuth.instance
+      UserCredential credential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: pass);
-    } on FirebaseAuthException catch (e) {
-      log(e.code.toString());
-    }
 
-    if (credential != null) {
       String uid = credential.user!.uid;
 
       UserModel newUser = UserModel(
@@ -118,65 +114,36 @@ class _RegisterState extends State<Register> {
       await FirebaseFirestore.instance
           .collection("users")
           .doc(uid)
-          .set(newUser.toMap())
-          .then((value) => print("new user created"));
+          .set(newUser.toMap());
 
+      print("New user created");
 
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => CompleteRegister(
-            firebaseUser: credential!.user!,
+          builder: (context) => MyVerify(
+            firebaseUser: credential.user!,
             userModel: newUser,
+            email: email,
+            myAuth: myAuth,
           ),
         ),
       );
-
+    } on FirebaseAuthException catch (e) {
+      //log(e.code.toString());
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.message ?? "Error during registration")),
+      );
       setState(() {
         loading = false;
       });
     }
   }
 
-
-  void showOTPDialog(BuildContext context) {
-    TextEditingController otpController = TextEditingController();
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Enter OTP'),
-          content: TextField(
-            controller: otpController,
-            keyboardType: TextInputType.number,
-            decoration: const InputDecoration(
-              hintText: 'OTP',
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                verifyOtp(otpController.text);
-              },
-              child: const Text('Verify'),
-            ),
-            TextButton(
-              onPressed: () =>
-                  {Navigator.of(context).pop()}, // Dismiss the dialog
-              child: const Text('Cancel'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 240, 224, 84),
+      backgroundColor: const Color(0xFFE6E6FA),
       body: Stack(
         children: [
           Container(
@@ -242,7 +209,7 @@ class _RegisterState extends State<Register> {
                     decoration: InputDecoration(
                         fillColor: Colors.white,
                         filled: true,
-                        hintText: 'conform password',
+                        hintText: 'confirm password',
                         prefixIcon: const Icon(Icons.lock_open),
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12))),
@@ -252,10 +219,11 @@ class _RegisterState extends State<Register> {
                   ),
                   SizedBox(
                     width: 160,
+                    height: 50,
                     child: OutlinedButton(
                       onPressed: () {
                         setState(() {
-                          loading = !loading;
+                          loading = true;
                         });
                         checkValue(context);
                       },
@@ -282,9 +250,11 @@ class _RegisterState extends State<Register> {
                   TextButton(
                     onPressed: () {
                       Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const Login()));
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const Login(),
+                        ),
+                      );
                     },
                     child: const Text(
                       'Already logged in? Click here',

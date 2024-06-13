@@ -154,7 +154,7 @@ class _CompleteRegisterState extends State<CompleteRegister> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: const Color.fromARGB(255, 240, 224, 84),
+        backgroundColor: const Color(0xFFE6E6FA),
         body: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 35),
             child: Column(
@@ -214,8 +214,6 @@ class _CompleteRegisterState extends State<CompleteRegister> {
                       : const Text('Sign Up'),
                 ),
               ],
-            )
-          )
-        );
+            )));
   }
 }

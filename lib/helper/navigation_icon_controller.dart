@@ -4,9 +4,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:pet_adoption_app/helper/get_user_model.dart';
 import 'package:pet_adoption_app/models/user_model.dart';
-import 'package:pet_adoption_app/screens/routes/addpat.dart';
-import 'package:pet_adoption_app/screens/routes/chats.dart';
-import 'package:pet_adoption_app/screens/routes/home.dart';
+import 'package:pet_adoption_app/screens/add/addpat.dart';
+import 'package:pet_adoption_app/screens/chat/chats.dart';
+import 'package:pet_adoption_app/screens/home/home.dart';
 import 'package:pet_adoption_app/screens/settings/profile.dart';
 import 'package:flutter/material.dart';
 

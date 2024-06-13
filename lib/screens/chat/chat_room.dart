@@ -6,6 +6,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:pet_adoption_app/helper/stripe_keys.dart';
 import 'package:pet_adoption_app/main.dart';
@@ -13,6 +14,7 @@ import 'package:pet_adoption_app/models/chat_room_model.dart';
 import 'package:pet_adoption_app/models/message_model.dart';
 import 'package:pet_adoption_app/models/user_model.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 class ChatRoomPage extends StatefulWidget {
   final UserModel targetUser;
@@ -206,6 +208,11 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
     }
   }
 
+  String formatDateTime(DateTime dateTime) {
+    final DateFormat formatter = DateFormat('hh:mm a');
+    return formatter.format(dateTime);
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -215,7 +222,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
       },
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: const Color.fromARGB(255, 240, 224, 84),
+          backgroundColor: const Color(0xFF2196F3),
           title: Row(
             children: [
               CircleAvatar(
@@ -224,7 +231,11 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                     NetworkImage(widget.targetUser.uProfile.toString()),
               ),
               const SizedBox(width: 15),
-              Text(widget.targetUser.uName.toString()),
+              Text(
+                widget.targetUser.uName.toString(),
+                style:
+                    const TextStyle(color: Colors.black), // Changing text color
+              ),
             ],
           ),
         ),
@@ -233,7 +244,10 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
             children: [
               Expanded(
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  padding: EdgeInsets.only(
+                    left: MediaQuery.of(context).size.width / 4,
+                    right: 10,
+                  ),
                   child: StreamBuilder(
                     stream: FirebaseFirestore.instance
                         .collection("chatrooms")
@@ -248,37 +262,63 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                             reverse: true,
                             itemCount: snapshot.data!.docs.length,
                             itemBuilder: (context, index) {
-                              MessageModel currentMessage =
+                              MessageModel? currentMessage =
                                   MessageModel.fromMap(
                                 snapshot.data!.docs[index].data()
                                     as Map<String, dynamic>,
                               );
-                              return Row(
-                                mainAxisAlignment: currentMessage.sender ==
-                                        widget.userModel.uName
-                                    ? MainAxisAlignment.end
-                                    : MainAxisAlignment.start,
-                                children: [
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 10, horizontal: 10),
-                                    margin:
-                                        const EdgeInsets.symmetric(vertical: 2),
-                                    decoration: BoxDecoration(
-                                      color: currentMessage.sender ==
-                                              widget.userModel.uName
-                                          ? Colors.blue[200]
-                                          : const Color.fromARGB(
-                                              255, 100, 97, 97),
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    child: Text(
-                                      currentMessage.text.toString(),
-                                      style:
-                                          const TextStyle(color: Colors.white),
-                                    ),
+                              bool isSender = currentMessage.sender ==
+                                  widget.userModel.uName;
+                              return Align(
+                                alignment: isSender
+                                    ? Alignment.centerRight
+                                    : Alignment.centerLeft,
+                                child: Container(
+                                  margin: const EdgeInsets.symmetric(
+                                    vertical: 1,
+                                    horizontal: 8,
                                   ),
-                                ],
+                                  padding: const EdgeInsets.all(15),
+                                  decoration: BoxDecoration(
+                                    color: isSender
+                                        ? Colors.blue[200]
+                                        : Colors.grey[300],
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment: isSender
+                                        ? CrossAxisAlignment.end
+                                        : CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          CircleAvatar(
+                                            radius: 15,
+                                            backgroundColor: Colors.grey[400],
+                                            backgroundImage: NetworkImage(
+                                              isSender
+                                                  ? widget.userModel.uProfile ??
+                                                      'https://as2.ftcdn.net/v2/jpg/05/89/93/27/1000_F_589932782_vQAEAZhHnq1QCGu5ikwrYaQD0Mmurm0N.webp'
+                                                  : widget.targetUser
+                                                          .uProfile ??
+                                                      'https://as2.ftcdn.net/v2/jpg/05/89/93/27/1000_F_589932782_vQAEAZhHnq1QCGu5ikwrYaQD0Mmurm0N.webp',
+                                            ),
+                                          ),
+                                          const SizedBox(width: 8),
+                                          Expanded(
+                                            child: Text(
+                                              currentMessage.text.toString(),
+                                              style: const TextStyle(
+                                                color: Colors.black,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               );
                             },
                           );
@@ -303,28 +343,54 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
               ),
               Container(
                 color: Colors.grey[200],
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
                 child: Row(
                   children: [
+                    Padding(
+                      padding: const EdgeInsets.only(right: 3),
+                      child: TextButton(
+                        onPressed: () async {
+                          await makePayment();
+                        },
+                        style: TextButton.styleFrom(
+                          backgroundColor: Colors.blue, // Changing button color
+                          shape: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.circular(20), // Rounded corners
+                          ),
+                        ),
+                        child: const Text(
+                          'Pay',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ),
                     Flexible(
                       child: TextField(
                         controller: messageController,
-                        decoration: const InputDecoration(
-                            border: InputBorder.none,
-                            hintText: "Enter message"),
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          hintText: "Message",
+                          contentPadding:
+                              const EdgeInsets.symmetric(horizontal: 25),
+                        ),
                       ),
                     ),
-                    TextButton(
-                      onPressed: () async {
-                        await makePayment();
-                      },
-                      child: const Text('Pay'),
-                    ),
-                    IconButton(
-                      onPressed: sendMessage,
-                      icon: const Icon(Icons.send,
-                          color: Color.fromARGB(255, 240, 224, 84)),
+                    Padding(
+                      padding: const EdgeInsets.all(3.0),
+                      child: Container(
+                        child: Center(
+                          child: IconButton(
+                            onPressed: sendMessage,
+                            icon: const Icon(
+                              Icons.send,
+                              color: Colors.blue, // Icon color
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
                   ],
                 ),
