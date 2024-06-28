@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_print, deprecated_member_use
+// ignore_for_file: avoid_print
 
 import 'dart:convert';
 import 'dart:developer';
@@ -14,14 +14,12 @@ import 'package:pet_adoption_app/models/chat_room_model.dart';
 import 'package:pet_adoption_app/models/message_model.dart';
 import 'package:pet_adoption_app/models/user_model.dart';
 import 'package:http/http.dart' as http;
-import 'package:intl/intl.dart';
 
 class ChatRoomPage extends StatefulWidget {
   final UserModel targetUser;
   final ChatRoomModel chatroom;
   final UserModel userModel;
   final User firebaseUser;
-
   const ChatRoomPage({
     super.key,
     required this.targetUser,
@@ -29,20 +27,16 @@ class ChatRoomPage extends StatefulWidget {
     required this.userModel,
     required this.firebaseUser,
   });
-
   @override
   _ChatRoomPageState createState() => _ChatRoomPageState();
 }
 
 class _ChatRoomPageState extends State<ChatRoomPage> {
   TextEditingController messageController = TextEditingController();
-
   Map<String, dynamic>? paymentIntentData;
-
   void sendMessage() async {
     String msg = messageController.text.trim();
     messageController.clear();
-
     if (msg.isNotEmpty) {
       MessageModel newMessage = MessageModel(
         createdOn: DateTime.now(),
@@ -51,21 +45,17 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
         text: msg,
         messageid: uuid.v1(),
       );
-
       FirebaseFirestore.instance
           .collection("chatrooms")
           .doc(widget.chatroom.chatRoomID)
           .collection("messages")
           .doc(newMessage.messageid)
           .set(newMessage.toMap());
-
       widget.chatroom.lastMessage = msg;
-
       FirebaseFirestore.instance
           .collection("chatrooms")
           .doc(widget.chatroom.chatRoomID)
           .set(widget.chatroom.toMap());
-
       log("Message sent");
     }
   }
@@ -121,7 +111,6 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
         'amount': amount,
         'currency': currency,
       };
-
       var response = await http.post(
         Uri.parse('https://api.stripe.com/v1/payment_intents'),
         body: body,
@@ -130,7 +119,6 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
           'Content-Type': 'application/x-www-form-urlencoded'
         },
       );
-
       if (response.statusCode == 200) {
         //print('Create Intent response ===> ${response.body.toString()}');
         Map<String, dynamic> paymentData = json.decode(response.body);
@@ -163,7 +151,6 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                     ],
                   ),
                 ));
-
         paymentIntentData = null;
       }).onError((error, stackTrace) {
         throw Exception(error);
@@ -208,11 +195,6 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
     }
   }
 
-  String formatDateTime(DateTime dateTime) {
-    final DateFormat formatter = DateFormat('hh:mm a');
-    return formatter.format(dateTime);
-  }
-
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -231,11 +213,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                     NetworkImage(widget.targetUser.uProfile.toString()),
               ),
               const SizedBox(width: 15),
-              Text(
-                widget.targetUser.uName.toString(),
-                style:
-                    const TextStyle(color: Colors.black), // Changing text color
-              ),
+              Text(widget.targetUser.uName.toString()),
             ],
           ),
         ),
@@ -244,10 +222,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
             children: [
               Expanded(
                 child: Container(
-                  padding: EdgeInsets.only(
-                    left: MediaQuery.of(context).size.width / 4,
-                    right: 10,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
                   child: StreamBuilder(
                     stream: FirebaseFirestore.instance
                         .collection("chatrooms")
@@ -262,63 +237,61 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                             reverse: true,
                             itemCount: snapshot.data!.docs.length,
                             itemBuilder: (context, index) {
-                              MessageModel? currentMessage =
+                              MessageModel currentMessage =
                                   MessageModel.fromMap(
                                 snapshot.data!.docs[index].data()
                                     as Map<String, dynamic>,
                               );
-                              bool isSender = currentMessage.sender ==
-                                  widget.userModel.uName;
-                              return Align(
-                                alignment: isSender
-                                    ? Alignment.centerRight
-                                    : Alignment.centerLeft,
-                                child: Container(
-                                  margin: const EdgeInsets.symmetric(
-                                    vertical: 1,
-                                    horizontal: 8,
-                                  ),
-                                  padding: const EdgeInsets.all(15),
-                                  decoration: BoxDecoration(
-                                    color: isSender
-                                        ? Colors.blue[200]
-                                        : Colors.grey[300],
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment: isSender
-                                        ? CrossAxisAlignment.end
-                                        : CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          CircleAvatar(
-                                            radius: 15,
-                                            backgroundColor: Colors.grey[400],
-                                            backgroundImage: NetworkImage(
-                                              isSender
-                                                  ? widget.userModel.uProfile ??
-                                                      'https://as2.ftcdn.net/v2/jpg/05/89/93/27/1000_F_589932782_vQAEAZhHnq1QCGu5ikwrYaQD0Mmurm0N.webp'
-                                                  : widget.targetUser
-                                                          .uProfile ??
-                                                      'https://as2.ftcdn.net/v2/jpg/05/89/93/27/1000_F_589932782_vQAEAZhHnq1QCGu5ikwrYaQD0Mmurm0N.webp',
-                                            ),
+                              return Row(
+                                mainAxisAlignment: currentMessage.sender ==
+                                        widget.userModel.uName
+                                    ? MainAxisAlignment.end
+                                    : MainAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.only(
+                                        right: 10, top: 4, bottom: 4, left: 4),
+                                    margin:
+                                        const EdgeInsets.symmetric(vertical: 2),
+                                    decoration: BoxDecoration(
+                                      color: currentMessage.sender ==
+                                              widget.userModel.uName
+                                          ? Colors.blue[200]
+                                          : const Color.fromARGB(
+                                              255, 201, 199, 199),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        SizedBox(
+                                          height: 28,
+                                          child: CircleAvatar(
+                                            radius: 14,
+                                            backgroundColor: Colors.white,
+                                            backgroundImage:
+                                                currentMessage.sender ==
+                                                        widget.userModel.uName
+                                                    ? NetworkImage(widget
+                                                        .userModel.uProfile
+                                                        .toString())
+                                                    : NetworkImage(widget
+                                                        .targetUser.uProfile
+                                                        .toString()),
                                           ),
-                                          const SizedBox(width: 8),
-                                          Expanded(
-                                            child: Text(
-                                              currentMessage.text.toString(),
-                                              style: const TextStyle(
-                                                color: Colors.black,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
+                                        ),
+                                        const SizedBox(
+                                          width: 8,
+                                        ),
+                                        Text(
+                                          currentMessage.text.toString(),
+                                          style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 20),
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ),
+                                ],
                               );
                             },
                           );
@@ -340,6 +313,9 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                     },
                   ),
                 ),
+              ),
+              const SizedBox(
+                height: 8,
               ),
               Container(
                 color: Colors.grey[200],
@@ -394,7 +370,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                     ),
                   ],
                 ),
-              ),
+              )
             ],
           ),
         ),

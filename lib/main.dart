@@ -35,7 +35,7 @@ void main() async {
 
   User? user = FirebaseAuth.instance.currentUser;
   if (user == null) {
-    //Logged in
+    //Not Logged in
     runApp(const MyApp());
   } else {
     UserModel? currentModel = await GetUserModel.getUserModelById(user.uid);
