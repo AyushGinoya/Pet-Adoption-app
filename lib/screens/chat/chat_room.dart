@@ -6,7 +6,6 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:pet_adoption_app/helper/stripe_keys.dart';
 import 'package:pet_adoption_app/main.dart';
@@ -77,15 +76,18 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
             onPressed: () async {
               Navigator.of(context).pop();
               try {
-                var amountInPaisa =
-                    (double.parse(_amountController.text)).toInt().toString();
-                paymentIntentData =
-                    await createPaymentIntent(amountInPaisa, 'INR');
+                var amountInRuppy =
+                    (double.parse(_amountController.text)).toInt() * 100;
+                var paymentIntentData =
+                    await createPaymentIntent(amountInRuppy.toString(), 'INR');
+                if (paymentIntentData == null) {
+                  throw Exception('Failed to create payment intent');
+                }
                 await Stripe.instance.initPaymentSheet(
                   paymentSheetParameters: SetupPaymentSheetParameters(
                     customFlow: true,
                     paymentIntentClientSecret:
-                        paymentIntentData!['client_secret'],
+                        paymentIntentData['client_secret'],
                     style: ThemeMode.light,
                     merchantDisplayName: 'Pets Adoption',
                     allowsDelayedPaymentMethods: true,
@@ -96,6 +98,22 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                 displayPaymentSheet();
               } catch (e) {
                 print("exception: $e");
+                // Show error message to user
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: const Text('Error'),
+                    content: Text('An error occurred: $e'),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text('OK'),
+                      ),
+                    ],
+                  ),
+                );
               }
             },
             child: const Text('Confirm'),
@@ -110,17 +128,17 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
       Map<String, dynamic> body = {
         'amount': amount,
         'currency': currency,
+        'payment_method_types[]': 'card',
       };
       var response = await http.post(
         Uri.parse('https://api.stripe.com/v1/payment_intents'),
         body: body,
         headers: {
           'Authorization': 'Bearer ${StripeKeys.secretKey}',
-          'Content-Type': 'application/x-www-form-urlencoded'
+          'Content-Type': 'application/x-www-form-urlencoded',
         },
       );
       if (response.statusCode == 200) {
-        //print('Create Intent response ===> ${response.body.toString()}');
         Map<String, dynamic> paymentData = json.decode(response.body);
         await storePaymentData(paymentData);
         return paymentData;
@@ -128,7 +146,8 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
         throw Exception('Failed to create payment intent');
       }
     } catch (e) {
-      print("exception:$e");
+      print("exception: $e");
+      return null;
     }
   }
 
@@ -136,41 +155,45 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
     try {
       await Stripe.instance.presentPaymentSheet().then((value) {
         showDialog(
-            context: context,
-            builder: (_) => const AlertDialog(
-                  content: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.check_circle,
-                        color: Colors.green,
-                        size: 100.0,
-                      ),
-                      SizedBox(height: 10.0),
-                      Text("Payment Successful!"),
-                    ],
-                  ),
-                ));
+          context: context,
+          builder: (_) => const AlertDialog(
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.check_circle,
+                  color: Colors.green,
+                  size: 100.0,
+                ),
+                SizedBox(height: 10.0),
+                Text("Payment Successful!"),
+              ],
+            ),
+          ),
+        );
         paymentIntentData = null;
       }).onError((error, stackTrace) {
         throw Exception(error);
       });
     } on StripeException catch (e) {
       print('Error is:---> $e');
-      const AlertDialog(
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              children: [
-                Icon(
-                  Icons.cancel,
-                  color: Colors.red,
-                ),
-                Text("Payment Failed"),
-              ],
-            ),
-          ],
+      showDialog(
+        context: context,
+        builder: (context) => const AlertDialog(
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    Icons.cancel,
+                    color: Colors.red,
+                  ),
+                  Text("Payment Failed"),
+                ],
+              ),
+            ],
+          ),
         ),
       );
     } catch (e) {

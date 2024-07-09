@@ -100,42 +100,42 @@ class _HomeState extends State<Home> {
             );
           }
 
-          print('Data fetched successfully');
+          // print('Data fetched successfully');
           return ListView.builder(
             itemCount: snapshot.data!.docs.length,
             itemBuilder: (BuildContext context, int index) {
               Pet pet = Pet.fromMap(
                   snapshot.data!.docs[index].data() as Map<String, dynamic>);
-              return InkWell(
-                onTap: () async {
-                  String? ownerName = pet.owner;
-                  // print(ownerUid);
-                  UserModel? ownerUserModel =
-                      await GetUserModel.getUserModelByName(ownerName!);
-                  ChatRoomModel? chatRoomModel =
-                      await GetChatRoom.getChatRoomModel(
-                          ownerUserModel!, widget.userModel);
+              return Stack(
+                alignment: Alignment.center,
+                children: [
+                  CustomCart().cartWidget(pet: pet),
+                  Positioned(
+                    bottom: 20,
+                    child: InkWell(
+                      onTap: () async {
+                        String? ownerName = pet.owner;
+                        // print(ownerUid);
+                        UserModel? ownerUserModel =
+                            await GetUserModel.getUserModelByName(ownerName!);
+                        ChatRoomModel? chatRoomModel =
+                            await GetChatRoom.getChatRoomModel(
+                                ownerUserModel!, widget.userModel);
 
-                  if (chatRoomModel != null) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ChatRoomPage(
-                          targetUser: ownerUserModel,
-                          userModel: widget.userModel,
-                          firebaseUser: widget.firebaseUser,
-                          chatroom: chatRoomModel,
-                        ),
-                      ),
-                    );
-                  }
-                },
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    CustomCart().cartWidget(pet: pet),
-                    Positioned(
-                      bottom: 20,
+                        if (chatRoomModel != null) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ChatRoomPage(
+                                targetUser: ownerUserModel,
+                                userModel: widget.userModel,
+                                firebaseUser: widget.firebaseUser,
+                                chatroom: chatRoomModel,
+                              ),
+                            ),
+                          );
+                        }
+                      },
                       child: Container(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 20, vertical: 10),
@@ -153,8 +153,8 @@ class _HomeState extends State<Home> {
                         ),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               );
             },
           );

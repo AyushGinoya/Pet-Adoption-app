@@ -10,8 +10,7 @@ class SearchPage extends StatefulWidget {
   final UserModel userModel;
   final User user;
 
-  const SearchPage({Key? key, required this.userModel, required this.user})
-      : super(key: key);
+  const SearchPage({super.key, required this.userModel, required this.user});
 
   @override
   State<SearchPage> createState() => _SearchPageState();

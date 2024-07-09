@@ -3,7 +3,6 @@ import 'package:email_otp/email_otp.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pet_adoption_app/models/user_model.dart';
-import 'package:pet_adoption_app/screens/Register/complete_register.dart';
 import 'package:pet_adoption_app/screens/Register/verify_otp.dart';
 import 'package:pet_adoption_app/screens/login/login.dart';
 
@@ -80,13 +79,13 @@ class _RegisterState extends State<Register> {
 
     bool otpSent = await myAuth.sendOTP();
     if (otpSent) {
-      print('OTP sent');
+      //print('OTP sent');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("OTP sent")),
       );
       signUp(email, pass, userName);
     } else {
-      print('Failed to send OTP');
+      //print('Failed to send OTP');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Failed to send OTP")),
       );
@@ -116,7 +115,7 @@ class _RegisterState extends State<Register> {
           .doc(uid)
           .set(newUser.toMap());
 
-      print("New user created");
+      //print("New user created");
 
       Navigator.pushReplacement(
         context,

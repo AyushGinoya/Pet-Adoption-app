@@ -21,8 +21,6 @@ class AddPat extends StatefulWidget {
 }
 
 class _AddPatState extends State<AddPat> {
-  final _formKey = GlobalKey<FormState>();
-
   String? user;
   String _selectedGender = 'Male';
 
@@ -41,7 +39,6 @@ class _AddPatState extends State<AddPat> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _ageController = TextEditingController();
   final TextEditingController _typeController = TextEditingController();
-  final TextEditingController _genderController = TextEditingController();
   final TextEditingController _heightController = TextEditingController();
   final TextEditingController _subTypeController = TextEditingController();
 
@@ -103,6 +100,113 @@ class _AddPatState extends State<AddPat> {
     );
   }
 
+  bool checkValues() {
+    if (_nameController.text.isEmpty) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text("Name is Empty")));
+      return false;
+    }
+
+    if (_ageController.text.isEmpty) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('Age is empty')));
+      return false;
+    } else if (double.tryParse(_ageController.text) == null) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('age must be a number')));
+      return false;
+    } else if (double.parse(_ageController.text) <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('age must be greater than 0')));
+      return false;
+    }
+
+    if (_typeController.text.isEmpty) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('Type is empty')));
+      return false;
+    }
+
+    if (_subTypeController.text.isEmpty) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('Sub Type is empty')));
+      return false;
+    }
+
+    if (_heightController.text.isEmpty) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('Height is empty"')));
+      return false;
+    } else if (double.tryParse(_heightController.text) == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Height must be a number')));
+      return false;
+    } else if (double.parse(_heightController.text) <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Height must be greater than 0')));
+      return false;
+    }
+
+    if (_img == null) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('Image is not selected')));
+      return false;
+    }
+    return true;
+  }
+
+  Future<void> addPet() async {
+    if (!checkValues()) {
+      log('Please fill all the fields and select an image');
+      return;
+    }
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+      UploadTask uploadTask = FirebaseStorage.instance
+          .ref()
+          .child('petsImages')
+          .child(user!)
+          .child(const Uuid().v1())
+          .putFile(_img!);
+
+      TaskSnapshot snapshot = await uploadTask;
+
+      if (snapshot.state == TaskState.success) {
+        imgUrl = await snapshot.ref.getDownloadURL();
+      }
+
+      Map<String, dynamic> petData = {
+        'name': _nameController.text,
+        'age': int.parse(_ageController.text),
+        'gender': _selectedGender,
+        'type': _typeController.text,
+        'subType': _subTypeController.text,
+        'height': int.parse(_heightController.text),
+        'imageUrl': imgUrl,
+        'owner': user,
+      };
+
+      await database.add(petData);
+
+      _nameController.clear();
+      _ageController.clear();
+      _typeController.clear();
+      _heightController.clear();
+      _subTypeController.clear();
+      setState(() {
+        _img = null;
+        _isLoading = false;
+      });
+    } catch (e) {
+      log('Error uploading image or adding data: $e');
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -124,243 +228,176 @@ class _AddPatState extends State<AddPat> {
             left: 15,
             right: 15,
           ),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 24.0),
-                  child: GestureDetector(
-                    onTap: showPhotoOptions,
-                    child: Container(
-                      height: 300,
-                      width: 340,
-                      decoration: BoxDecoration(
-                        color: const Color.fromARGB(255, 209, 207, 207),
-                        borderRadius: BorderRadius.circular(18),
-                      ),
-                      child: _img != null
-                          ? ClipRRect(
-                              borderRadius: BorderRadius.circular(17),
-                              child: Image.file(
-                                _img!,
-                                fit: BoxFit.cover,
-                                width: double.infinity,
-                                height: 300,
-                              ),
-                            )
-                          : const Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.add_a_photo,
-                                  color: Colors.grey,
-                                  size: 50,
-                                ),
-                                SizedBox(height: 10),
-                                Text(
-                                  "Tap to select an image",
-                                  style: TextStyle(
-                                    color: Colors.grey,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                              ],
-                            ),
+          child: Column(
+            children: [
+              const Text(
+                'All fields is Mandatory',
+                style: TextStyle(
+                    color: Colors.red, fontFamily: 'AppFont', fontSize: 24),
+              ),
+              const SizedBox(height: 20),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 24.0),
+                child: GestureDetector(
+                  onTap: showPhotoOptions,
+                  child: Container(
+                    height: 300,
+                    width: 340,
+                    decoration: BoxDecoration(
+                      color: const Color.fromARGB(255, 209, 207, 207),
+                      borderRadius: BorderRadius.circular(18),
                     ),
-                  ),
-                ),
-                Container(
-                  color: Colors.white,
-                  child: TextFormField(
-                    keyboardType: TextInputType.text,
-                    controller: _nameController,
-                    decoration: const InputDecoration(
-                      hintText: 'Enter name',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.zero,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Container(
-                  color: Colors.white,
-                  child: TextFormField(
-                    controller: _ageController,
-                    keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                      hintText: 'Enter age',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.zero,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                const ListTile(
-                  title: Text('Gender'),
-                ),
-                Container(
-                  color: Colors.white,
-                  child: RadioListTile<String>(
-                    title: const Text('Male'),
-                    value: 'Male',
-                    activeColor: const Color.fromARGB(255, 141, 73, 129),
-                    groupValue: _selectedGender,
-                    onChanged: (String? value) {
-                      setState(() {
-                        _selectedGender = value!;
-                      });
-                    },
-                  ),
-                ),
-                Container(
-                  color: Colors.white,
-                  child: RadioListTile<String>(
-                    title: const Text('Female'),
-                    value: 'Female',
-                    activeColor: const Color.fromARGB(255, 141, 73, 129),
-                    groupValue: _selectedGender,
-                    onChanged: (String? value) {
-                      setState(() {
-                        _selectedGender = value!;
-                      });
-                    },
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Container(
-                  color: Colors.white,
-                  child: TextFormField(
-                    controller: _typeController,
-                    decoration: const InputDecoration(
-                      hintText: 'Enter type',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.zero,
-                      ),
-                    ),
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return "Enter type";
-                      }
-                      return null;
-                    },
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Container(
-                  color: Colors.white,
-                  child: TextFormField(
-                    controller: _subTypeController,
-                    decoration: const InputDecoration(
-                        hintText: 'Enter Sub type',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.zero,
-                        )),
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return "Enter sub type";
-                      }
-                      return null;
-                    },
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Container(
-                  color: Colors.white,
-                  child: TextFormField(
-                    controller: _heightController,
-                    keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                      hintText: 'Enter height(in cm)',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.zero,
-                      ),
-                    ),
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return 'Enter height';
-                      }
-                      return null;
-                    },
-                  ),
-                ),
-                const SizedBox(height: 20),
-                SizedBox(
-                  height: 40,
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      if (_img == null) {
-                        log('No image selected');
-                        return;
-                      }
-                      try {
-                        setState(() {
-                          _isLoading = true;
-                        });
-                        UploadTask uploadTask = FirebaseStorage.instance
-                            .ref()
-                            .child('petsImages')
-                            .child(user!)
-                            .child(const Uuid().v1())
-                            .putFile(_img!);
-
-                        TaskSnapshot snapshot = await uploadTask;
-
-                        if (snapshot.state == TaskState.success) {
-                          imgUrl = await snapshot.ref.getDownloadURL();
-                        }
-
-                        if (_formKey.currentState!.validate()) {
-                          Map<String, dynamic> petData = {
-                            'name': _nameController.text,
-                            'age': int.parse(_ageController.text),
-                            'gender': _selectedGender,
-                            'type': _typeController.text,
-                            'subType': _subTypeController.text,
-                            'height': int.parse(_heightController.text),
-                            'imageUrl': imgUrl,
-                            'owner': user,
-                          };
-
-                          await database.add(petData);
-
-                          _nameController.clear();
-                          _ageController.clear();
-                          _genderController.clear();
-                          _typeController.clear();
-                          _heightController.clear();
-                          _subTypeController.clear();
-                          setState(() {
-                            _img = null;
-                            _isLoading = false;
-                          });
-                        }
-                      } catch (e) {
-                        log('Error uploading image or adding data: $e');
-                        setState(() {
-                          _isLoading = false;
-                        });
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        side: const BorderSide(color: Colors.black),
-                      ),
-                    ),
-                    child: _isLoading
-                        ? const CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              Colors.black,
+                    child: _img != null
+                        ? ClipRRect(
+                            borderRadius: BorderRadius.circular(17),
+                            child: Image.file(
+                              _img!,
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                              height: 300,
                             ),
                           )
-                        : const Text('Add pet'),
+                        : const Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.add_a_photo,
+                                color: Colors.grey,
+                                size: 50,
+                              ),
+                              SizedBox(height: 10),
+                              Text(
+                                "Tap to select an image",
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ],
+                          ),
                   ),
                 ),
-              ],
-            ),
+              ),
+              Container(
+                color: Colors.white,
+                child: TextFormField(
+                  keyboardType: TextInputType.text,
+                  controller: _nameController,
+                  decoration: const InputDecoration(
+                    hintText: 'Enter name',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.zero,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Container(
+                color: Colors.white,
+                child: TextFormField(
+                  controller: _ageController,
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(
+                    hintText: 'Enter age',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.zero,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              const ListTile(
+                title: Text('Gender'),
+              ),
+              Container(
+                color: Colors.white,
+                child: RadioListTile<String>(
+                  title: const Text('Male'),
+                  value: 'Male',
+                  activeColor: const Color.fromARGB(255, 141, 73, 129),
+                  groupValue: _selectedGender,
+                  onChanged: (String? value) {
+                    setState(() {
+                      _selectedGender = value!;
+                    });
+                  },
+                ),
+              ),
+              Container(
+                color: Colors.white,
+                child: RadioListTile<String>(
+                  title: const Text('Female'),
+                  value: 'Female',
+                  activeColor: const Color.fromARGB(255, 141, 73, 129),
+                  groupValue: _selectedGender,
+                  onChanged: (String? value) {
+                    setState(() {
+                      _selectedGender = value!;
+                    });
+                  },
+                ),
+              ),
+              const SizedBox(height: 20),
+              Container(
+                color: Colors.white,
+                child: TextFormField(
+                  controller: _typeController,
+                  decoration: const InputDecoration(
+                    hintText: 'Enter type',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.zero,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Container(
+                color: Colors.white,
+                child: TextFormField(
+                  controller: _subTypeController,
+                  decoration: const InputDecoration(
+                    hintText: 'Enter Sub type',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.zero,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Container(
+                color: Colors.white,
+                child: TextFormField(
+                  controller: _heightController,
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(
+                    hintText: 'Enter height(in cm)',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.zero,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                height: 40,
+                child: ElevatedButton(
+                  onPressed: addPet,
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      side: const BorderSide(color: Colors.black),
+                    ),
+                  ),
+                  child: _isLoading
+                      ? const CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Colors.black,
+                          ),
+                        )
+                      : const Text('Add pet'),
+                ),
+              ),
+            ],
           ),
         ),
       ),

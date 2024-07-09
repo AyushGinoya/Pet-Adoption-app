@@ -85,7 +85,6 @@ class _NavigationMenuState extends State<NavigationMenu> {
               ],
               selectedItemColor: Colors.blue,
               unselectedItemColor: Colors.grey,
-              backgroundColor: const Color.fromARGB(255, 223, 30, 30),
             ),
           ),
         ),
