@@ -12,6 +12,7 @@ class ChatRoomModel {
     lastMessage = map["lastmessage"];
   }
 
+
   Map<String, dynamic> toMap() {
     return {
       "chatRoomID": chatRoomID,

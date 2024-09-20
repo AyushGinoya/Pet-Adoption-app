@@ -103,7 +103,7 @@ class _HomeState extends State<Home> {
           // print('Data fetched successfully');
           return ListView.builder(
             itemCount: snapshot.data!.docs.length,
-            itemBuilder: (BuildContext context, int index) {
+            itemBuilder: (context,index) {
               Pet pet = Pet.fromMap(
                   snapshot.data!.docs[index].data() as Map<String, dynamic>);
               return Stack(
